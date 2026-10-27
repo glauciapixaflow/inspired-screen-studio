@@ -26,7 +26,7 @@ function Login() {
   return (
     <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
       <section className="relative flex flex-col justify-between overflow-hidden bg-ink p-10 text-ink-foreground lg:p-16">
-        <img src={mars} alt="" className="pointer-events-none absolute left-1/2 top-1/2 w-[70%] -translate-x-1/3 -translate-y-1/3 opacity-60" width={1024} height={1024} />
+        <img src={mars} alt="" className="pointer-events-none absolute mix-blend-lighten left-1/2 top-1/2 w-[70%] -translate-x-1/3 -translate-y-1/3 opacity-60" width={1024} height={1024} />
         <div className="relative"><Logo /></div>
         <div className="relative my-16">
           <p className="eyebrow flex items-center gap-4"><span className="h-px w-10 bg-lime" />Área exclusiva</p>

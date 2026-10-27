@@ -52,7 +52,7 @@ function Index() {
           </nav>
         </header>
         <div className="relative pt-28">
-          <img src={mars} alt="Planeta Marte" width={1024} height={1024} className="pointer-events-none absolute right-[5%] top-10 w-[55%] max-w-[560px] opacity-90 lg:right-[15%]" />
+          <img src={mars} alt="Planeta Marte" width={1024} height={1024} className="pointer-events-none absolute mix-blend-lighten right-[5%] top-10 w-[55%] max-w-[560px] opacity-90 lg:right-[15%]" />
           <div className="relative">
             <Eyebrow line="bg-ink-foreground">O futuro já tem endereço</Eyebrow>
             <h1 className="font-display mt-10 text-6xl md:text-8xl lg:text-[9rem]">
@@ -99,7 +99,7 @@ function Index() {
       {/* Mapa */}
       <section id="mapa" className="relative overflow-hidden bg-ink px-6 py-32 text-ink-foreground lg:px-10">
         <div className="pointer-events-none absolute -right-40 top-1/2 hidden aspect-square w-[60%] -translate-y-1/2 lg:block">
-          <img src={mars} alt="" loading="lazy" width={1024} height={1024} className="size-full opacity-70 sepia" />
+          <img src={mars} alt="" loading="lazy" width={1024} height={1024} className="size-full opacity-70 sepia mix-blend-lighten" />
           {([["12", "Olympus", "top-[22%] right-[30%]"], ["08", "Elysium", "top-[48%] left-[18%]"], ["21", "Valles", "bottom-[22%] right-[28%]"]] as const).map(([n, t, pos]) => (
             <span key={t} className={`absolute ${pos} flex items-center gap-3 rounded-full bg-ink/90 py-2 pl-2 pr-5 text-sm font-semibold tracking-widest`}>
               <span className="grid size-9 place-items-center rounded-full bg-lime text-xs text-lime-foreground">{n}</span>{t.toUpperCase()}
