@@ -1,153 +1,78 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowRight, Heart, MapPin, Maximize2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import mars from "@/assets/mars.jpg";
-import l1 from "@/assets/lote1.jpg";
-import l2 from "@/assets/lote2.jpg";
-import l3 from "@/assets/lote3.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Ares Imóveis — Seu pedaço do novo mundo" },
-      { name: "description", content: "Lotes certificados nas regiões mais promissoras de Marte. Um patrimônio para atravessar gerações." },
-      { property: "og:title", content: "Ares Imóveis — Seu pedaço do novo mundo" },
-      { property: "og:description", content: "Lotes certificados nas regiões mais promissoras de Marte." },
+      { title: "Acesse sua conta — Ares Imóveis" },
+      { name: "description", content: "Portal do investidor Ares Imóveis: acesse seus lotes em Marte." },
+      { property: "og:title", content: "Acesse sua conta — Ares Imóveis" },
+      { property: "og:description", content: "Portal do investidor Ares Imóveis." },
     ],
   }),
-  component: Index,
+  component: Login,
 });
 
-const lotes = [
-  { img: l1, tag: "Mais procurado", local: "Planície de Elysium", nome: "Ares Vista 04", area: "2.400 m²", preco: "R$ 189 mil" },
-  { img: l2, tag: "Vista privilegiada", local: "Encosta do Olympus Mons", nome: "Olympus 17", area: "4.850 m²", preco: "R$ 312 mil" },
-  { img: l3, tag: "Novo setor", local: "Valles Marineris", nome: "Vallis Prime 21", area: "3.100 m²", preco: "R$ 247 mil" },
-];
-
-const passos = [
-  ["Explore", "Compare regiões, topografias e os lotes disponíveis."],
-  ["Reserve", "Garanta sua prioridade com uma reserva digital segura."],
-  ["Conquiste", "Receba seu registro territorial e o dossiê completo."],
-];
-
-function Eyebrow({ children, line = "bg-current" }: { children: React.ReactNode; line?: string }) {
-  return <p className="eyebrow flex items-center gap-4"><span className={`h-px w-8 ${line}`} />{children}</p>;
-}
-
-function Index() {
-  const [fav, setFav] = useState<number[]>([]);
+function Login() {
+  const [show, setShow] = useState(false);
+  const nav = useNavigate();
+  const go = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    nav({ to: "/inicio" });
+  };
   return (
-    <main>
-      {/* Hero */}
-      <section className="bg-ink px-6 pb-24 text-ink-foreground lg:px-10">
-        <header className="flex items-center justify-between border-b border-ink-foreground/15 py-8">
-          <Logo />
-          <nav className="hidden items-center gap-10 md:flex">
-            <a href="#lotes">Lotes</a>
-            <a href="#como">Como funciona</a>
-            <a href="#mapa">Mapa de Marte</a>
-            <a href="#contato" className="border border-ink-foreground/40 px-6 py-4 text-sm font-semibold transition hover:bg-ink-foreground hover:text-ink">Falar com especialista</a>
-            <Link to="/login" className="border-l border-ink-foreground/20 pl-6 text-sm opacity-80">Entrar</Link>
-          </nav>
-        </header>
-        <div className="relative pt-28">
-          <img src={mars} alt="Planeta Marte" width={1024} height={1024} className="pointer-events-none absolute right-[5%] top-10 w-[55%] max-w-[560px] opacity-90 lg:right-[15%]" />
-          <div className="relative">
-            <Eyebrow line="bg-ink-foreground">O futuro já tem endereço</Eyebrow>
-            <h1 className="font-display mt-10 text-6xl md:text-8xl lg:text-[9rem]">
-              Seu pedaço<br />do <span className="font-serif-i">novo mundo.</span>
-            </h1>
-            <div className="mt-12 flex items-center gap-12">
-              <p className="max-w-md text-lg opacity-80">Lotes certificados nas regiões mais promissoras de Marte. Um patrimônio para atravessar gerações.</p>
-              <a href="#lotes" aria-label="Ver lotes" className="grid size-20 shrink-0 place-items-center rounded-full border border-ink-foreground/40 transition hover:bg-ink-foreground hover:text-ink"><ArrowRight /></a>
-            </div>
+    <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
+      <section className="relative flex flex-col justify-between overflow-hidden bg-ink p-10 text-ink-foreground lg:p-16">
+        <img src={mars} alt="" className="pointer-events-none absolute left-1/2 top-1/2 w-[70%] -translate-x-1/3 -translate-y-1/3 opacity-60" width={1024} height={1024} />
+        <div className="relative"><Logo /></div>
+        <div className="relative my-16">
+          <p className="eyebrow flex items-center gap-4"><span className="h-px w-10 bg-lime" />Área exclusiva</p>
+          <h1 className="font-display mt-8 text-6xl lg:text-8xl">
+            Seu futuro<br />começa <span className="font-serif-i">além.</span>
+          </h1>
+          <p className="mt-8 max-w-xl text-lg opacity-80">
+            Acesse sua seleção de lotes, acompanhe propostas e descubra novas oportunidades no planeta vermelho.
+          </p>
+        </div>
+        <div className="relative flex justify-between text-xs tracking-[0.2em] opacity-70">
+          <span>18.65° N &nbsp; 226.2° E</span><span>ELYSIUM PLANITIA</span>
+        </div>
+      </section>
+
+      <section className="flex flex-col bg-background px-8 py-12 lg:px-24">
+        <div className="flex justify-between text-xs tracking-[0.2em] text-muted-foreground">
+          <span>PORTAL DO INVESTIDOR</span><span>2035 · BR</span>
+        </div>
+        <form onSubmit={go} className="mx-auto my-auto w-full max-w-md py-12">
+          <p className="eyebrow flex items-center gap-4"><span className="h-px w-10 bg-foreground" />Bem-vindo de volta</p>
+          <h2 className="font-display mt-8 text-6xl">Acesse sua conta</h2>
+          <p className="mt-6 text-muted-foreground">Entre para continuar explorando seu próximo território.</p>
+
+          <label className="eyebrow mt-12 block text-[0.65rem]">E-mail</label>
+          <input type="email" placeholder="seuemail@exemplo.com" className="w-full border-b border-input bg-transparent py-4 text-lg outline-none focus:border-primary" />
+          <label className="eyebrow mt-8 block text-[0.65rem]">Senha</label>
+          <div className="flex items-center border-b border-input focus-within:border-primary">
+            <input type={show ? "text" : "password"} placeholder="Mínimo de 6 caracteres" className="w-full bg-transparent py-4 text-lg outline-none" />
+            <button type="button" onClick={() => setShow(!show)} className="text-sm font-semibold text-primary">{show ? "Ocultar" : "Mostrar"}</button>
           </div>
-        </div>
-      </section>
-
-      {/* Lotes */}
-      <section id="lotes" className="px-6 py-24 lg:px-10">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <h2 className="font-display text-5xl md:text-7xl">Terrenos em destaque</h2>
-          <p className="max-w-md text-lg text-muted-foreground">Selecionados por potencial de valorização, localização e condições geológicas.</p>
-        </div>
-        <div className="mt-16 grid gap-8 md:grid-cols-3">
-          {lotes.map((l, i) => (
-            <article key={l.nome} className="group bg-card">
-              <div className="relative aspect-[1.07] overflow-hidden">
-                <img src={l.img} alt={l.nome} loading="lazy" width={768} height={896} className="size-full object-cover transition duration-700 group-hover:scale-105" />
-                <span className="absolute left-6 top-6 font-semibold tracking-widest text-ink-foreground">0{i + 1}</span>
-                <button onClick={() => setFav((f) => (f.includes(i) ? f.filter((x) => x !== i) : [...f, i]))} aria-label="Favoritar" className="absolute right-6 top-6 grid size-12 place-items-center rounded-full border border-ink-foreground/60 text-ink-foreground backdrop-blur">
-                  <Heart size={20} className={fav.includes(i) ? "fill-primary text-primary" : ""} />
-                </button>
-                <span className="eyebrow absolute bottom-6 left-6 bg-lime px-3 py-2 text-[0.65rem] text-lime-foreground">{l.tag}</span>
-              </div>
-              <div className="p-8">
-                <p className="eyebrow flex items-center gap-2 text-[0.7rem] font-medium text-muted-foreground"><MapPin size={16} />{l.local}</p>
-                <h3 className="mt-6 text-3xl tracking-tight">{l.nome}</h3>
-                <div className="mt-8 flex items-end justify-between border-t border-border pt-6">
-                  <span className="flex items-center gap-2 text-sm text-muted-foreground"><Maximize2 size={14} />{l.area}</span>
-                  <span className="text-right text-sm text-muted-foreground">A partir de<br /><b className="text-lg text-foreground">{l.preco}</b></span>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* Mapa */}
-      <section id="mapa" className="relative overflow-hidden bg-ink px-6 py-32 text-ink-foreground lg:px-10">
-        <div className="pointer-events-none absolute -right-40 top-1/2 hidden aspect-square w-[60%] -translate-y-1/2 lg:block">
-          <img src={mars} alt="" loading="lazy" width={1024} height={1024} className="size-full opacity-70 sepia" />
-          {([["12", "Olympus", "top-[22%] right-[30%]"], ["08", "Elysium", "top-[48%] left-[18%]"], ["21", "Valles", "bottom-[22%] right-[28%]"]] as const).map(([n, t, pos]) => (
-            <span key={t} className={`absolute ${pos} flex items-center gap-3 rounded-full bg-ink/90 py-2 pl-2 pr-5 text-sm font-semibold tracking-widest`}>
-              <span className="grid size-9 place-items-center rounded-full bg-lime text-xs text-lime-foreground">{n}</span>{t.toUpperCase()}
-            </span>
-          ))}
-        </div>
-        <div className="relative max-w-xl">
-          <Eyebrow line="bg-lime">Inteligência territorial</Eyebrow>
-          <h2 className="font-display mt-8 text-6xl md:text-7xl">Escolha onde começa a sua <span className="font-serif-i">história.</span></h2>
-          <p className="mt-10 text-lg opacity-75">Nossa cartografia reúne dados geológicos, incidência solar e rotas projetadas de infraestrutura para guiar sua decisão.</p>
-          <button className="mt-12 flex items-center gap-6 bg-primary px-9 py-6 font-semibold text-primary-foreground transition hover:bg-rust">Abrir mapa interativo <ArrowRight size={18} /></button>
-        </div>
-      </section>
-
-      {/* Como funciona */}
-      <section id="como" className="grid gap-16 px-6 py-32 lg:grid-cols-[1fr_1.3fr] lg:px-10">
-        <div>
-          <Eyebrow line="bg-primary"><span className="text-muted-foreground">Jornada de compra</span></Eyebrow>
-          <h2 className="font-display mt-10 text-5xl md:text-7xl">Da Terra para Marte, sem complicação.</h2>
-        </div>
-        <div className="grid border-t border-border sm:grid-cols-3">
-          {passos.map(([t, d], i) => (
-            <div key={t} className="border-l border-border p-9">
-              <span className="text-sm text-primary">0{i + 1}</span>
-              <h3 className="mt-20 text-3xl tracking-tight">{t}</h3>
-              <p className="mt-4 text-muted-foreground">{d}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA + footer */}
-      <section id="contato" className="bg-rust px-6 pt-32 text-ink-foreground lg:px-10">
-        <div className="flex flex-wrap items-center justify-between gap-12 pb-24">
-          <div>
-            <Eyebrow line="bg-ink-foreground">Primeira chamada — 2035</Eyebrow>
-            <h2 className="font-display mt-10 text-6xl md:text-8xl">O próximo grande<br />território é <span className="font-serif-i">vermelho.</span></h2>
+          <div className="mt-8 flex items-center justify-between text-sm">
+            <label className="flex items-center gap-2"><input type="checkbox" defaultChecked className="accent-primary" /> Lembrar de mim</label>
+            <a href="#" className="text-primary">Esqueci minha senha</a>
           </div>
-          <a href="#lotes" className="flex size-56 flex-col items-center justify-center gap-4 rounded-full bg-lime text-lg text-lime-foreground transition hover:scale-105">
-            Encontrar meu lote <ArrowRight />
-          </a>
-        </div>
-        <footer className="flex flex-wrap items-center justify-between gap-6 border-t border-ink-foreground/20 py-10 text-sm">
-          <Logo />
-          <span className="opacity-80">Propriedades para o próximo capítulo da humanidade.</span>
-          <span className="opacity-80">© 2035 Ares Imóveis</span>
-        </footer>
+          <button className="mt-10 flex w-full items-center justify-center gap-4 bg-primary py-6 font-semibold text-primary-foreground transition hover:bg-rust">
+            Entrar na minha conta <ArrowRight size={18} />
+          </button>
+          <div className="my-8 flex items-center gap-4 text-xs tracking-[0.15em] text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />OU ACESSE PARA CONHECER<span className="h-px flex-1 bg-border" />
+          </div>
+          <Link to="/inicio" className="block border border-foreground/40 py-5 text-center font-semibold transition hover:bg-foreground hover:text-background">
+            Entrar como visitante
+          </Link>
+        </form>
       </section>
-    </main>
+    </div>
   );
 }
