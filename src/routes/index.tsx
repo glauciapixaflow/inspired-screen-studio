@@ -100,7 +100,7 @@ function Index() {
       <section id="mapa" className="relative overflow-hidden bg-ink px-6 py-32 text-ink-foreground lg:px-10">
         <div className="pointer-events-none absolute -right-40 top-1/2 hidden aspect-square w-[60%] -translate-y-1/2 lg:block">
           <img src={mars} alt="" loading="lazy" width={1024} height={1024} className="size-full opacity-70 sepia" />
-          {[["12", "Olympus", "top-[22%] right-[30%]"], ["08", "Elysium", "top-[48%] left-[18%]"], ["21", "Valles", "bottom-[22%] right-[28%]"]].map(([n, t, pos]) => (
+          {([["12", "Olympus", "top-[22%] right-[30%]"], ["08", "Elysium", "top-[48%] left-[18%]"], ["21", "Valles", "bottom-[22%] right-[28%]"]] as const).map(([n, t, pos]) => (
             <span key={t} className={`absolute ${pos} flex items-center gap-3 rounded-full bg-ink/90 py-2 pl-2 pr-5 text-sm font-semibold tracking-widest`}>
               <span className="grid size-9 place-items-center rounded-full bg-lime text-xs text-lime-foreground">{n}</span>{t.toUpperCase()}
             </span>
