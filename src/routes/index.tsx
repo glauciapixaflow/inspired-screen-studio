@@ -7,10 +7,10 @@ import mars from "@/assets/mars.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Acesse sua conta — Ares Imóveis" },
-      { name: "description", content: "Portal do investidor Ares Imóveis: acesse seus lotes em Marte." },
-      { property: "og:title", content: "Acesse sua conta — Ares Imóveis" },
-      { property: "og:description", content: "Portal do investidor Ares Imóveis." },
+      { title: "Acesse sua conta — Red Planet Properties" },
+      { name: "description", content: "Portal do investidor Red Planet Properties: acesse seus lotes em Marte." },
+      { property: "og:title", content: "Acesse sua conta — Red Planet Properties" },
+      { property: "og:description", content: "Portal do investidor Red Planet Properties." },
     ],
   }),
   component: Login,

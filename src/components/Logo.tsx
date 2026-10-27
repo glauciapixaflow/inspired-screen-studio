@@ -7,7 +7,7 @@ export function Logo() {
         <circle cx="18" cy="18" r="4" className="fill-primary" />
       </svg>
       <span className="text-lg tracking-[0.25em]">
-        <b className="font-bold">ARES</b> <span className="opacity-70">IMÓVEIS</span>
+        <b className="font-bold">RED PLANET</b> <span className="opacity-70">PROPERTIES</span>
       </span>
     </div>
   );

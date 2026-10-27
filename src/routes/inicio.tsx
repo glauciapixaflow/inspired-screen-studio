@@ -10,9 +10,9 @@ import l3 from "@/assets/lote3.jpg";
 export const Route = createFileRoute("/inicio")({
   head: () => ({
     meta: [
-      { title: "Ares Imóveis — Seu pedaço do novo mundo" },
+      { title: "Red Planet Properties — Seu pedaço do novo mundo" },
       { name: "description", content: "Lotes certificados nas regiões mais promissoras de Marte. Um patrimônio para atravessar gerações." },
-      { property: "og:title", content: "Ares Imóveis — Seu pedaço do novo mundo" },
+      { property: "og:title", content: "Red Planet Properties — Seu pedaço do novo mundo" },
       { property: "og:description", content: "Lotes certificados nas regiões mais promissoras de Marte." },
     ],
   }),
@@ -145,7 +145,7 @@ function Index() {
         <footer className="flex flex-wrap items-center justify-between gap-6 border-t border-ink-foreground/20 py-10 text-sm">
           <Logo />
           <span className="opacity-80">Propriedades para o próximo capítulo da humanidade.</span>
-          <span className="opacity-80">© 2035 Ares Imóveis</span>
+          <span className="opacity-80">© 2035 Red Planet Properties</span>
         </footer>
       </section>
     </main>

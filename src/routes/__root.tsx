@@ -78,7 +78,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Ares Imóveis — Lotes em Marte" },
+      { title: "Red Planet Properties — Lotes em Marte" },
       { name: "description", content: "Lotes certificados nas regiões mais promissoras de Marte." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
