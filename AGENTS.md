@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep the post-reservation house-printing experience in a separate client-side Three.js scene, passing the selected region and parcel from the map; this preserves map selection on return without implying a persisted reservation.
+- Define scene material colors as semantic CSS tokens and convert them for Three.js inside the browser; this keeps the 3D view aligned with the design system.
