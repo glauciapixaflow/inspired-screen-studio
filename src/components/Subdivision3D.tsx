@@ -9,6 +9,7 @@ import FuturisticHouse, { sceneColor } from "@/components/FuturisticHouse";
 import type { ConstructionSite } from "@/lib/construction";
 import { SUBDIVISION_PARCELS, subdivisionHomes } from "@/lib/subdivision";
 import SubdivisionInfrastructure from "@/components/SubdivisionInfrastructure";
+import SubdivisionTerrain from "@/components/SubdivisionTerrain";
 
 type View = "overview" | "home" | "top";
 
@@ -67,7 +68,7 @@ function Neighborhood({ site, homes, view, selected, onSelect, onReady }: {
     <ambientLight intensity={1.4} />
     <directionalLight position={[25, 45, 30]} intensity={3} castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-35} shadow-camera-right={35} shadow-camera-top={35} shadow-camera-bottom={-35} />
     <Environment><Lightformer position={[0, 20, 0]} rotation-x={Math.PI / 2} scale={[50, 50, 1]} intensity={2} /></Environment>
-    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow><planeGeometry args={[220, 220]} /><meshStandardMaterial map={soilMap} roughness={1} /></mesh>
+    <SubdivisionTerrain texture={soilMap} />
     {[-22, -11, 0, 11, 22].flatMap(offset => [
       <mesh key={`road-x-${offset}`} position={[offset, 0.025, 0]} receiveShadow><boxGeometry args={[2.7, 0.05, 47]} /><meshStandardMaterial color={colors.road} roughness={0.95} /></mesh>,
       <mesh key={`road-z-${offset}`} position={[0, 0.025, offset]} receiveShadow><boxGeometry args={[47, 0.05, 2.7]} /><meshStandardMaterial color={colors.road} roughness={0.95} /></mesh>,
