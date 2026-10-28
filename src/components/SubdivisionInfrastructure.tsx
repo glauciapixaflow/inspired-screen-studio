@@ -18,7 +18,7 @@ function Beams({ items, color, lit = false }: { items: Beam[]; color: THREE.Colo
   }, [items]);
   return <instancedMesh ref={ref} args={[undefined, undefined, items.length]} castShadow={!lit} receiveShadow={!lit}>
     <boxGeometry args={[1, 1, 1]} />
-    <meshStandardMaterial color={color} metalness={0.45} roughness={0.55} emissive={lit ? color : undefined} emissiveIntensity={lit ? 1.1 : 0} />
+    <meshStandardMaterial color={color} metalness={0.45} roughness={0.55} emissive={color} emissiveIntensity={lit ? 1.1 : 0} />
   </instancedMesh>;
 }
 
