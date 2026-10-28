@@ -78,7 +78,7 @@ function Markers({ onPick, hidden }: { onPick: (l: Lote) => void; hidden: boolea
               <sphereGeometry args={[0.035, 16, 16]} />
               <meshBasicMaterial color="#c8f040" />
             </mesh>
-            <Html distanceFactor={6} center style={{ display: hidden ? "none" : undefined }}>
+            <Html distanceFactor={6} center wrapperClass={hidden ? "hidden" : ""} style={{ display: hidden ? "none" : undefined }}>
               <span onClick={() => onPick(l)} className="cursor-pointer whitespace-nowrap rounded-full bg-ink/90 px-3 py-1 text-xs font-semibold tracking-widest text-ink-foreground">
                 {l.id} · {l.nome.toUpperCase()}
               </span>
