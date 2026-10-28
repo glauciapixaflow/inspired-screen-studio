@@ -13,7 +13,7 @@ function sceneColor(token: string) {
   if (!ctx) return new THREE.Color();
   ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
   ctx.fillRect(0, 0, 1, 1);
-  const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+  const [r = 0, g = 0, b = 0] = ctx.getImageData(0, 0, 1, 1).data;
   return new THREE.Color().setRGB(r / 255, g / 255, b / 255, THREE.SRGBColorSpace);
 }
 
