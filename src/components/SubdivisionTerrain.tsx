@@ -5,7 +5,7 @@ import { terrainHeight } from "@/lib/subdivision-terrain";
 
 export default function SubdivisionTerrain({ texture }: { texture: THREE.Texture }) {
   const geometry = useMemo(() => {
-    const mesh = new THREE.PlaneGeometry(240, 240, 120, 120);
+    const mesh = new THREE.PlaneGeometry(340, 340, 170, 170);
     mesh.rotateX(-Math.PI / 2);
     const positions = mesh.getAttribute("position");
     const low = sceneColor("--printer-soil"), rock = sceneColor("--terrain-rock"), ridge = sceneColor("--terrain-ridge");
