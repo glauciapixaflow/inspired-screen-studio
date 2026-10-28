@@ -56,6 +56,8 @@
   --color-lime: var(--lime);
   --color-lime-foreground: var(--lime-foreground);
   --color-rust: var(--rust);
+  --color-construction-surface: var(--construction-surface);
+  --color-construction-text: var(--construction-text);
   --font-sans: "DM Sans", system-ui, sans-serif;
   --font-display: "Inter Tight", "DM Sans", sans-serif;
   --font-serif: "Instrument Serif", Georgia, serif;
@@ -95,6 +97,12 @@
   --lime: oklch(0.88 0.19 120);
   --lime-foreground: oklch(0.17 0.01 40);
   --rust: oklch(0.42 0.13 32);
+  --construction-surface: oklch(0.18 0.012 50);
+  --construction-text: oklch(0.96 0.008 75);
+  --printer-soil: oklch(0.48 0.11 38);
+  --printer-concrete: oklch(0.8 0.016 75);
+  --printer-metal: oklch(0.34 0.018 180);
+  --printer-glass: oklch(0.65 0.08 200);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
