@@ -67,18 +67,18 @@ function Planet() {
   );
 }
 
-function Markers({ onPick }: { onPick: (l: Lote) => void }) {
+function Markers({ onPick, hidden }: { onPick: (l: Lote) => void; hidden: boolean }) {
   return (
     <>
       {LOTES.map((l) => {
         const p = latLon(l.lat, l.lon, RADIUS * 1.01);
         return (
-          <group key={l.id} position={p}>
+          <group key={l.id} position={p} visible={!hidden}>
             <mesh onClick={() => onPick(l)}>
               <sphereGeometry args={[0.035, 16, 16]} />
               <meshBasicMaterial color="#c8f040" />
             </mesh>
-            <Html distanceFactor={6} center>
+            <Html distanceFactor={6} center style={{ display: hidden ? "none" : undefined }}>
               <span onClick={() => onPick(l)} className="cursor-pointer whitespace-nowrap rounded-full bg-ink/90 px-3 py-1 text-xs font-semibold tracking-widest text-ink-foreground">
                 {l.id} · {l.nome.toUpperCase()}
               </span>
@@ -153,7 +153,7 @@ export default function MarsMap3D() {
         <directionalLight position={[5, 3, 5]} intensity={2.2} />
         <Stars radius={60} depth={30} count={3000} factor={3} fade />
         <Planet />
-        {!zoomed && <Markers onPick={(l) => { setPicked(l); setPlot(null); }} />}
+        <Markers hidden={!!zoomed} onPick={(l) => { setPicked(l); setPlot(null); }} />
         {mode === "orbita" && <OrbitControls ref={controls} enablePan={false} minDistance={2.12} maxDistance={10} zoomSpeed={0.6} />}
         <Zoomer target={zoomTo} controls={controls} onDone={() => setZoomTo(null)} />
         {zoomed && <Plots lote={zoomed} selected={plot} onSelect={setPlot} />}
