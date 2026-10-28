@@ -81,7 +81,7 @@ function PrinterScene({ running, cycle, initialComplete, onProgress }: { running
   </>;
 }
 
-export default function HousePrinter3D({ site, onBack, onComplete, initialComplete = false }: { site: ConstructionSite; onBack: () => void; onComplete: (site: ConstructionSite) => void; initialComplete?: boolean }) {
+export default function HousePrinter3D({ site, onBack, onComplete, onSubdivision, initialComplete = false }: { site: ConstructionSite; onBack: () => void; onComplete: (site: ConstructionSite) => void; onSubdivision: () => void; initialComplete?: boolean }) {
   const [progress, setProgress] = useState(initialComplete ? 1 : 0);
   const [running, setRunning] = useState(true);
   const [cycle, setCycle] = useState(0);
@@ -106,7 +106,7 @@ export default function HousePrinter3D({ site, onBack, onComplete, initialComple
           <p className="mt-2 text-xs text-construction-text/65">Projeto ilustrativo · Reserva não salva · Sem construção real</p>
         </div>
         <div className="flex gap-2">
-          {complete && <Button onClick={onBack}><MapPin /> Ver casa no lote</Button>}
+          {complete && <Button onClick={onSubdivision}><MapPin /> Ver loteamento 3D</Button>}
           {!complete && <Button variant="secondary" onClick={() => setRunning((value) => !value)}>{running ? <Pause /> : <Play />}{running ? "Pausar" : "Continuar"}</Button>}
           <Button variant="outline" className="border-construction-text/30 bg-construction-surface text-construction-text" onClick={() => { setCycle((value) => value + 1); setRunning(true); }}><RotateCcw /> Reimprimir</Button>
         </div>
