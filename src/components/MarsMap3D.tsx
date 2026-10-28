@@ -1,11 +1,12 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Stars, Html } from "@react-three/drei";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import FuturisticHouse from "@/components/FuturisticHouse";
 import HousePrinter3D from "@/components/HousePrinter3D";
 import { Button } from "@/components/ui/button";
-import { reserveConstructionSite, type ConstructionSite } from "@/lib/construction";
+import { completeConstruction, parcelOffset, reserveConstructionSite, type ConstructionSite } from "@/lib/construction";
 
 // Feel constants
 const RADIUS = 2;
@@ -122,6 +123,8 @@ export default function MarsMap3D() {
   const [zoomed, setZoomed] = useState<Lote | null>(null);
   const [zoomTo, setZoomTo] = useState<THREE.Vector3 | null>(null);
   const [construction, setConstruction] = useState<ConstructionSite | null>(null);
+  const [completedHomes, setCompletedHomes] = useState<ConstructionSite[]>([]);
+  const onComplete = useCallback((site: ConstructionSite) => setCompletedHomes(sites => completeConstruction(sites, site, 1)), []);
   const controls = useRef<OrbitControlsImpl | null>(null);
   const fly = useRef<FlyState>({ pos: latLon(0, 0, RADIUS), dir: new THREE.Vector3(0, 1, 0), turn: 0 });
 
@@ -161,7 +164,7 @@ export default function MarsMap3D() {
         <Markers hidden={!!zoomed} onPick={(l) => { setPicked(l); setPlot(null); }} />
         {mode === "orbita" && <OrbitControls ref={controls} enablePan={false} minDistance={2.12} maxDistance={10} zoomSpeed={0.6} />}
         <Zoomer target={zoomTo} controls={controls} onDone={() => setZoomTo(null)} />
-        {zoomed && <Plots lote={zoomed} selected={plot} onSelect={setPlot} />}
+        {zoomed && <Plots lote={zoomed} selected={plot} onSelect={setPlot} homes={completedHomes} />}
         <Flight active={mode === "voo"} fly={fly} />
       </Canvas>
 
@@ -192,7 +195,8 @@ export default function MarsMap3D() {
               <p className="eyebrow text-muted-foreground">Parcela escolhida</p>
               <p className="mt-2 text-xl">{picked.nome} · {plot}</p>
               <p className="text-sm text-muted-foreground">2.400 m²</p>
-              <Button onClick={() => setConstruction(reserveConstructionSite(picked.nome, plot))} className="mt-4 h-auto w-full py-3 font-semibold">Reservar esta parcela</Button>
+              <Button onClick={() => setConstruction(reserveConstructionSite(picked.nome, plot))} className="mt-4 h-auto w-full py-3 font-semibold">{completedHomes.some(home => home.region === picked.nome && home.parcel === plot) ? "Ver minha casa" : "Reservar esta parcela"}</Button>
+              {completedHomes.some(home => home.region === picked.nome && home.parcel === plot) && <p className="mt-2 text-sm font-semibold text-primary">Casa concluída no lote</p>}
             </div>
           ) : (
             <button onClick={() => { setMode("orbita"); setZoomed(picked); setZoomTo(latLon(picked.lat, picked.lon, RADIUS + 0.22)); }} className="mt-5 w-full bg-primary py-3 font-semibold text-primary-foreground">Aproximar e escolher parcela</button>
@@ -201,7 +205,7 @@ export default function MarsMap3D() {
           <button onClick={() => { setPicked(null); setPlot(null); }} className="mt-2 w-full py-2 text-sm text-muted-foreground">Fechar</button>
         </div>
       )}
-      {construction && <HousePrinter3D site={construction} onBack={() => setConstruction(null)} />}
+      {construction && <HousePrinter3D site={construction} onComplete={onComplete} onBack={() => setConstruction(null)} />}
     </div>
   );
 }
@@ -222,7 +226,7 @@ function Zoomer({ target, controls, onDone }: { target: THREE.Vector3 | null; co
 
 const ROWS = ["A", "B", "C", "D"];
 // Grid of purchasable parcels on the surface around a region
-function Plots({ lote, selected, onSelect }: { lote: Lote; selected: string | null; onSelect: (p: string) => void }) {
+function Plots({ lote, selected, onSelect, homes }: { lote: Lote; selected: string | null; onSelect: (p: string) => void; homes: ConstructionSite[] }) {
   const { pos, quat } = useMemo(() => {
     const p = latLon(lote.lat, lote.lon, RADIUS * 1.002);
     const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), p.clone().normalize());
@@ -231,6 +235,10 @@ function Plots({ lote, selected, onSelect }: { lote: Lote; selected: string | nu
   const S = 0.028;
   return (
     <group position={pos} quaternion={quat}>
+      {homes.filter(home => home.region === lote.nome).map(home => {
+        const [x, y] = parcelOffset(home.parcel);
+        return <group key={home.parcel} position={[x, y, 0.0005]} rotation={[Math.PI / 2, 0, 0]} scale={0.0034} onClick={e => { e.stopPropagation(); onSelect(home.parcel); }}><FuturisticHouse /></group>;
+      })}
       {ROWS.flatMap((r, i) => [1, 2, 3, 4].map((c, j) => {
         const id = `${r}${c}`;
         const on = selected === id;
