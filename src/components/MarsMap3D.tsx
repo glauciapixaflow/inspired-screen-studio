@@ -5,6 +5,7 @@ import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import FuturisticHouse from "@/components/FuturisticHouse";
 import HousePrinter3D from "@/components/HousePrinter3D";
+import Subdivision3D from "@/components/Subdivision3D";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LOTES, type Lote } from "@/lib/mars-regions";
@@ -118,6 +119,7 @@ export default function MarsMap3D() {
   const [zoomed, setZoomed] = useState<Lote | null>(null);
   const [zoomTo, setZoomTo] = useState<THREE.Vector3 | null>(null);
   const [construction, setConstruction] = useState<ConstructionSite | null>(null);
+  const [subdivision, setSubdivision] = useState<ConstructionSite | null>(null);
   const [completedHomes, setCompletedHomes] = useState<ConstructionSite[]>([]);
   const onComplete = useCallback((site: ConstructionSite) => setCompletedHomes(sites => completeConstruction(sites, site, 1)), []);
   const controls = useRef<OrbitControlsImpl | null>(null);
@@ -203,7 +205,7 @@ export default function MarsMap3D() {
               <p className="mt-2 text-xl">{picked.nome} · {plot}</p>
               <p className="text-sm text-muted-foreground">2.400 m²</p>
               <Button onClick={() => setConstruction(reserveConstructionSite(picked.nome, plot))} className="mt-4 h-auto w-full py-3 font-semibold">{completedHomes.some(home => home.region === picked.nome && home.parcel === plot) ? "Ver minha casa" : "Reservar esta parcela"}</Button>
-              {completedHomes.some(home => home.region === picked.nome && home.parcel === plot) && <p className="mt-2 text-sm font-semibold text-primary">Casa concluída no lote</p>}
+              {completedHomes.some(home => home.region === picked.nome && home.parcel === plot) && <><p className="mt-2 text-sm font-semibold text-primary">Casa concluída no lote</p><Button variant="secondary" className="mt-2 w-full" onClick={() => setSubdivision(reserveConstructionSite(picked.nome, plot))}>Ver loteamento 3D</Button></>}
             </div>
           ) : (
             <button onClick={() => { setMode("orbita"); setZoomed(picked); setZoomTo(latLon(picked.lat, picked.lon, RADIUS + 0.22)); }} className="mt-5 w-full bg-primary py-3 font-semibold text-primary-foreground">Aproximar e escolher parcela</button>
@@ -212,7 +214,8 @@ export default function MarsMap3D() {
           <button onClick={() => { setPicked(null); setPlot(null); }} className="mt-2 w-full py-2 text-sm text-muted-foreground">Fechar</button>
         </div>
       )}
-      {construction && <HousePrinter3D site={construction} initialComplete={completedHomes.some(home => home.region === construction.region && home.parcel === construction.parcel)} onComplete={onComplete} onBack={() => setConstruction(null)} />}
+      {construction && !subdivision && <HousePrinter3D site={construction} initialComplete={completedHomes.some(home => home.region === construction.region && home.parcel === construction.parcel)} onComplete={onComplete} onSubdivision={() => { setSubdivision(construction); setConstruction(null); }} onBack={() => setConstruction(null)} />}
+      {subdivision && <Subdivision3D site={subdivision} homes={completedHomes} onBack={() => setSubdivision(null)} />}
     </div>
   );
 }
