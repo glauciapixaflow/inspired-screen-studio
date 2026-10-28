@@ -11,3 +11,4 @@
 
 - Keep the post-reservation house-printing experience in a separate client-side Three.js scene, passing the selected region and parcel from the map; this preserves map selection on return without implying a persisted reservation.
 - Define scene material colors as semantic CSS tokens and convert them for Three.js inside the browser; this keeps the 3D view aligned with the design system.
+- Share a generated print-ready habitat between the printer and parcel scenes; store completed sites only in map session state so finished homes match their reserved parcels without implying a saved purchase.
