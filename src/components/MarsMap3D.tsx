@@ -6,6 +6,8 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import FuturisticHouse from "@/components/FuturisticHouse";
 import HousePrinter3D from "@/components/HousePrinter3D";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { LOTES, type Lote } from "@/lib/mars-regions";
 import { completeConstruction, parcelOffset, reserveConstructionSite, type ConstructionSite } from "@/lib/construction";
 
 // Feel constants
@@ -13,13 +15,6 @@ const RADIUS = 2;
 const FLY_ALT = 0.35;
 const FLY_SPEED = 0.18; // rad/s along the surface
 const TURN = 1.2; // rad/s heading change
-
-export type Lote = { id: string; nome: string; lat: number; lon: number; preco: string };
-export const LOTES: Lote[] = [
-  { id: "08", nome: "Elysium", lat: 18.6, lon: 146, preco: "R$ 189 mil" },
-  { id: "12", nome: "Olympus", lat: 18.4, lon: -134, preco: "R$ 312 mil" },
-  { id: "21", nome: "Valles", lat: -12, lon: -70, preco: "R$ 247 mil" },
-];
 
 function latLon(lat: number, lon: number, r: number) {
   const phi = THREE.MathUtils.degToRad(90 - lat);
@@ -168,9 +163,21 @@ export default function MarsMap3D() {
         <Flight active={mode === "voo"} fly={fly} />
       </Canvas>
 
-      <div className="absolute left-6 top-6 flex gap-2">
+      <div className="absolute left-6 top-6 flex flex-wrap gap-2">
         <button onClick={() => { setMode("orbita"); setZoomed(null); setZoomTo(new THREE.Vector3(0, 1, 6)); }} className={`px-5 py-3 text-sm font-semibold ${mode === "orbita" ? "bg-lime text-lime-foreground" : "bg-ink/80 text-ink-foreground"}`}>Órbita</button>
         <button onClick={() => { setZoomed(null); startFlight(picked ?? undefined); }} className={`px-5 py-3 text-sm font-semibold ${mode === "voo" ? "bg-lime text-lime-foreground" : "bg-ink/80 text-ink-foreground"}`}>Voar sobre Marte</button>
+      </div>
+
+      <div className="absolute left-6 top-20 w-56 sm:w-64">
+        <Select value={picked?.id ?? ""} onValueChange={id => {
+          const region = LOTES.find(lote => lote.id === id);
+          if (!region) return;
+          setPicked(region); setPlot(null); setMode("orbita"); setZoomed(region);
+          setZoomTo(latLon(region.lat, region.lon, RADIUS + 0.22));
+        }}>
+          <SelectTrigger aria-label="Escolher região de Marte" className="w-full border-ink-foreground/30 bg-ink text-ink-foreground"><SelectValue placeholder="Escolher região" /></SelectTrigger>
+          <SelectContent>{LOTES.map(region => <SelectItem key={region.id} value={region.id}>{region.nome}</SelectItem>)}</SelectContent>
+        </Select>
       </div>
 
       {mode === "voo" && (
@@ -186,10 +193,10 @@ export default function MarsMap3D() {
       )}
 
       {picked && (
-        <div className={`absolute right-4 w-64 bg-background p-4 text-foreground sm:right-6 sm:top-6 sm:w-72 sm:p-6 ${completedHomes.some(home => home.region === picked.nome && home.parcel === plot) ? "bottom-20 sm:bottom-auto" : "top-20"}`}>
+        <div className={`absolute right-4 w-64 bg-background p-4 text-foreground sm:right-6 sm:top-6 sm:w-72 sm:p-6 ${completedHomes.some(home => home.region === picked.nome && home.parcel === plot) ? "bottom-20 sm:bottom-auto" : "top-32"}`}>
           <p className="eyebrow text-muted-foreground">Região {picked.id}</p>
           <h3 className="mt-3 text-2xl">{picked.nome}</h3>
-          <p className="mt-2 text-sm text-muted-foreground">A partir de <b className="text-foreground">{picked.preco}</b></p>
+          <p className="mt-2 text-sm text-muted-foreground">{picked.preco ? <>A partir de <b className="text-foreground">{picked.preco}</b></> : "Valor a definir"}</p>
           {plot ? (
             <div className="mt-5 border-t border-border pt-5">
               <p className="eyebrow text-muted-foreground">Parcela escolhida</p>
