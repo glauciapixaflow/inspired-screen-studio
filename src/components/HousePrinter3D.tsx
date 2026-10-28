@@ -1,28 +1,19 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Stars } from "@react-three/drei";
+import { OrbitControls, Stars, Environment, Lightformer } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Pause, Play, RotateCcw, Printer } from "lucide-react";
+import { ArrowLeft, Pause, Play, RotateCcw, Printer, MapPin } from "lucide-react";
 import * as THREE from "three";
 import { Button } from "@/components/ui/button";
 import { constructionStage, type ConstructionSite } from "@/lib/construction";
 
-function sceneColor(token: string) {
-  const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = 1;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return new THREE.Color();
-  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
-  ctx.fillRect(0, 0, 1, 1);
-  const [r = 0, g = 0, b = 0] = ctx.getImageData(0, 0, 1, 1).data;
-  return new THREE.Color().setRGB(r / 255, g / 255, b / 255, THREE.SRGBColorSpace);
-}
+import FuturisticHouse, { sceneColor } from "@/components/FuturisticHouse";
 
 type BoxProps = { position: [number, number, number]; size: [number, number, number]; color: THREE.Color };
 function Block({ position, size, color }: BoxProps) {
   return <mesh position={position} castShadow receiveShadow><boxGeometry args={size} /><meshStandardMaterial color={color} roughness={0.85} /></mesh>;
 }
 
-function PrinterScene({ running, cycle, onProgress }: { running: boolean; cycle: number; onProgress: (p: number) => void }) {
+function PrinterScene({ running, cycle, initialComplete, onProgress }: { running: boolean; cycle: number; initialComplete: boolean; onProgress: (p: number) => void }) {
   const { camera, size } = useThree();
   useEffect(() => {
     const narrow = size.width / size.height < 0.8;
@@ -36,17 +27,17 @@ function PrinterScene({ running, cycle, onProgress }: { running: boolean; cycle:
   }), []);
   const elapsed = useRef(0);
   const lastReport = useRef(0);
-  const layers = useRef<Array<THREE.Group | null>>([]);
+  const [buildProgress, setBuildProgress] = useState(initialComplete ? 1 : 0);
+  const printer = useRef<THREE.Group | null>(null);
   const head = useRef<THREE.Group | null>(null);
   const bridge = useRef<THREE.Group | null>(null);
-  const windows = useRef<THREE.Group | null>(null);
-  useEffect(() => { elapsed.current = 0; lastReport.current = 0; onProgress(0); }, [cycle, onProgress]);
+
+  useEffect(() => { const start = initialComplete && cycle === 0 ? 40 : 0; elapsed.current = start; lastReport.current = 0; setBuildProgress(start / 40); onProgress(start / 40); }, [cycle, initialComplete, onProgress]);
   useFrame((_, delta) => {
     if (running) elapsed.current = Math.min(40, elapsed.current + delta);
     const progress = elapsed.current / 40;
     const currentLayer = Math.min(49, Math.floor(progress * 50));
-    layers.current.forEach((layer, index) => { if (layer) layer.visible = index < currentLayer || progress === 1; });
-    if (windows.current) windows.current.visible = progress >= 0.88;
+    if (printer.current) printer.current.visible = progress < 1;
     // A rectangular toolpath follows the perimeter of each printed layer.
     const step = (elapsed.current * 1.3) % 4;
     let x = 0, z = 0;
@@ -59,6 +50,7 @@ function PrinterScene({ running, cycle, onProgress }: { running: boolean; cycle:
     if (bridge.current) bridge.current.position.set(0, 0, progress === 1 ? -2.3 : z);
     if (elapsed.current - lastReport.current > 0.15 || progress === 1) {
       lastReport.current = elapsed.current;
+      setBuildProgress(progress);
       onProgress(progress);
     }
   });
@@ -68,34 +60,8 @@ function PrinterScene({ running, cycle, onProgress }: { running: boolean; cycle:
     <directionalLight position={[6, 10, 7]} intensity={3} castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-10} shadow-camera-right={10} shadow-camera-top={10} shadow-camera-bottom={-10} />
     <Stars radius={70} depth={30} count={900} factor={2} fade />
     <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow><planeGeometry args={[200, 200]} /><meshStandardMaterial color={colors.soil} roughness={1} /></mesh>
-    <Block position={[0, 0.12, 0]} size={[4.5, 0.24, 3.5]} color={colors.concrete} />
-    {Array.from({ length: 50 }, (_, i) => {
-      const y = 0.28 + i * 0.06;
-      const windowLevel = y > 1.05 && y < 2.05;
-      return <group key={i} ref={(node) => { layers.current[i] = node; }} visible={false}>
-        {i >= 44 ? <Block position={[0, y, 0]} size={[4.3, 0.05, 3.3]} color={colors.concrete} /> : <>
-          <Block position={[0, y, -1.5]} size={[4, 0.052, 0.18]} color={colors.concrete} />
-          {[-1, 1].map((side) => <group key={side}>
-            {windowLevel ? <>
-              <Block position={[side * 2, y, -1.03]} size={[0.18, 0.052, 0.94]} color={colors.concrete} />
-              <Block position={[side * 2, y, 1.03]} size={[0.18, 0.052, 0.94]} color={colors.concrete} />
-            </> : <Block position={[side * 2, y, 0]} size={[0.18, 0.052, 3]} color={colors.concrete} />}
-            {windowLevel ? <>
-              <Block position={[side * 0.62, y, 1.5]} size={[0.24, 0.052, 0.18]} color={colors.concrete} />
-              <Block position={[side * 1.85, y, 1.5]} size={[0.3, 0.052, 0.18]} color={colors.concrete} />
-            </> : <Block position={[side * 1.25, y, 1.5]} size={[1.5, 0.052, 0.18]} color={colors.concrete} />}
-          </group>)}
-          {y > 2.35 && <Block position={[0, y, 1.5]} size={[1, 0.052, 0.18]} color={colors.concrete} />}
-        </>}
-      </group>;
-    })}
-    <group ref={windows} visible={false}>
-      {[-1, 1].map((side) => <group key={side}>
-        <Block position={[side * 1.22, 1.55, 1.5]} size={[0.96, 0.97, 0.05]} color={colors.glass} />
-        <Block position={[side * 2, 1.55, 0]} size={[0.05, 0.97, 1.08]} color={colors.glass} />
-      </group>)}
-      <Block position={[0, 1.28, 1.48]} size={[0.9, 2.05, 0.09]} color={colors.metal} />
-    </group>
+    <FuturisticHouse progress={buildProgress} />
+    <group ref={printer}>
     {[-3, 3].flatMap((x) => [-2.5, 2.5].map((z) => <group key={`${x}-${z}`}>
       <Block position={[x, 2.3, z]} size={[0.18, 4.6, 0.18]} color={colors.metal} />
       <Block position={[x, 0.15, z]} size={[0.65, 0.3, 0.65]} color={colors.metal} />
@@ -109,22 +75,25 @@ function PrinterScene({ running, cycle, onProgress }: { running: boolean; cycle:
         <mesh position={[0, -0.14, 0]}><cylinderGeometry args={[0.065, 0.03, 0.25, 12]} /><meshStandardMaterial color={colors.metal} /></mesh>
       </group>
     </group>
+    </group>
+    <Environment><Lightformer intensity={3} position={[0, 8, 0]} rotation-x={Math.PI / 2} scale={[12, 12, 1]} /><Lightformer intensity={2} position={[-8, 4, 3]} rotation-y={Math.PI / 2} scale={[8, 8, 1]} /></Environment>
     <OrbitControls makeDefault target={[0, 1.6, 0]} minDistance={8} maxDistance={23} maxPolarAngle={Math.PI / 2 - 0.03} enablePan={false} />
   </>;
 }
 
-export default function HousePrinter3D({ site, onBack }: { site: ConstructionSite; onBack: () => void }) {
-  const [progress, setProgress] = useState(0);
+export default function HousePrinter3D({ site, onBack, onComplete, initialComplete = false }: { site: ConstructionSite; onBack: () => void; onComplete: (site: ConstructionSite) => void; initialComplete?: boolean }) {
+  const [progress, setProgress] = useState(initialComplete ? 1 : 0);
   const [running, setRunning] = useState(true);
   const [cycle, setCycle] = useState(0);
   useEffect(() => { if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setRunning(false); }, []);
   const complete = progress >= 1;
+  useEffect(() => { if (complete) onComplete(site); }, [complete, onComplete, site]);
   return <section className="absolute inset-0 z-30 bg-construction-surface text-construction-text" aria-label="Impressão 3D da casa">
-    <Canvas shadows camera={{ position: [10, 7, 11], fov: 46 }}><PrinterScene running={running && !complete} cycle={cycle} onProgress={setProgress} /></Canvas>
+    <Canvas shadows onCreated={({ gl }) => { gl.localClippingEnabled = true; }} camera={{ position: [10, 7, 11], fov: 46 }}><PrinterScene running={running && !complete} cycle={cycle} initialComplete={initialComplete} onProgress={setProgress} /></Canvas>
     <header className="pointer-events-none absolute inset-x-0 top-0 flex flex-wrap items-start justify-between gap-4 p-4 sm:p-6">
       <div>
         <p className="text-xs font-semibold uppercase">Red Planet Properties · Simulação 3D</p>
-        <h1 className="mt-2 text-2xl font-semibold sm:text-3xl">Sua casa em Marte</h1>
+        <h1 className="mt-2 text-2xl font-semibold sm:text-3xl">Seu habitat em Marte</h1>
         <p className="mt-2 text-sm">{site.region} · Parcela {site.parcel}</p>
       </div>
       <Button variant="secondary" onClick={onBack} className="pointer-events-auto"><ArrowLeft /> Voltar ao mapa</Button>
@@ -137,6 +106,7 @@ export default function HousePrinter3D({ site, onBack }: { site: ConstructionSit
           <p className="mt-2 text-xs text-construction-text/65">Projeto ilustrativo · Reserva não salva · Sem construção real</p>
         </div>
         <div className="flex gap-2">
+          {complete && <Button onClick={onBack}><MapPin /> Ver casa no lote</Button>}
           {!complete && <Button variant="secondary" onClick={() => setRunning((value) => !value)}>{running ? <Pause /> : <Play />}{running ? "Pausar" : "Continuar"}</Button>}
           <Button variant="outline" className="border-construction-text/30 bg-construction-surface text-construction-text" onClick={() => { setCycle((value) => value + 1); setRunning(true); }}><RotateCcw /> Reimprimir</Button>
         </div>
