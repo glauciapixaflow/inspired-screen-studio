@@ -110,7 +110,7 @@ function Index() {
           <Eyebrow line="bg-lime">Inteligência territorial</Eyebrow>
           <h2 className="font-display mt-8 text-6xl md:text-7xl">Escolha onde começa a sua <span className="font-serif-i">história.</span></h2>
           <p className="mt-10 text-lg opacity-75">Nossa cartografia reúne dados geológicos, incidência solar e rotas projetadas de infraestrutura para guiar sua decisão.</p>
-          <button className="mt-12 flex items-center gap-6 bg-primary px-9 py-6 font-semibold text-primary-foreground transition hover:bg-rust">Abrir mapa interativo <ArrowRight size={18} /></button>
+          <Link to="/mapa" className="mt-12 inline-flex items-center gap-6 bg-primary px-9 py-6 font-semibold text-primary-foreground transition hover:bg-rust">Abrir mapa interativo 3D <ArrowRight size={18} /></Link>
         </div>
       </section>
 
