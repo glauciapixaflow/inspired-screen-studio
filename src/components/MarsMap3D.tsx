@@ -114,6 +114,10 @@ function Flight({ active, fly }: { active: boolean; fly: React.MutableRefObject<
 export default function MarsMap3D() {
   const [mode, setMode] = useState<"orbita" | "voo">("orbita");
   const [picked, setPicked] = useState<Lote | null>(null);
+  const [plot, setPlot] = useState<string | null>(null);
+  const [zoomed, setZoomed] = useState<Lote | null>(null);
+  const [zoomTo, setZoomTo] = useState<THREE.Vector3 | null>(null);
+  const controls = useRef<OrbitControlsImpl | null>(null);
   const fly = useRef<FlyState>({ pos: latLon(0, 0, RADIUS), dir: new THREE.Vector3(0, 1, 0), turn: 0 });
 
   const startFlight = (l?: Lote) => {
