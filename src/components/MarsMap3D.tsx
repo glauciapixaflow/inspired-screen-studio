@@ -3,6 +3,9 @@ import { OrbitControls, Stars, Html } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import HousePrinter3D from "@/components/HousePrinter3D";
+import { Button } from "@/components/ui/button";
+import { reserveConstructionSite, type ConstructionSite } from "@/lib/construction";
 
 // Feel constants
 const RADIUS = 2;
@@ -28,7 +31,8 @@ function makeMarsTexture() {
   const w = 1024, h = 512;
   const c = document.createElement("canvas");
   c.width = w; c.height = h;
-  const ctx = c.getContext("2d")!;
+  const ctx = c.getContext("2d");
+  if (!ctx) return new THREE.Texture();
   const img = ctx.createImageData(w, h);
   let s = 7;
   const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
@@ -117,6 +121,7 @@ export default function MarsMap3D() {
   const [plot, setPlot] = useState<string | null>(null);
   const [zoomed, setZoomed] = useState<Lote | null>(null);
   const [zoomTo, setZoomTo] = useState<THREE.Vector3 | null>(null);
+  const [construction, setConstruction] = useState<ConstructionSite | null>(null);
   const controls = useRef<OrbitControlsImpl | null>(null);
   const fly = useRef<FlyState>({ pos: latLon(0, 0, RADIUS), dir: new THREE.Vector3(0, 1, 0), turn: 0 });
 
@@ -178,7 +183,7 @@ export default function MarsMap3D() {
       )}
 
       {picked && (
-        <div className="absolute right-6 top-6 w-72 bg-background p-6 text-foreground">
+        <div className="absolute right-4 top-20 w-64 bg-background p-4 text-foreground sm:right-6 sm:top-6 sm:w-72 sm:p-6">
           <p className="eyebrow text-muted-foreground">Região {picked.id}</p>
           <h3 className="mt-3 text-2xl">{picked.nome}</h3>
           <p className="mt-2 text-sm text-muted-foreground">A partir de <b className="text-foreground">{picked.preco}</b></p>
@@ -187,7 +192,7 @@ export default function MarsMap3D() {
               <p className="eyebrow text-muted-foreground">Parcela escolhida</p>
               <p className="mt-2 text-xl">{picked.nome} · {plot}</p>
               <p className="text-sm text-muted-foreground">2.400 m²</p>
-              <button onClick={() => alert(`Reserva da parcela ${plot} em ${picked.nome} solicitada!`)} className="mt-4 w-full bg-primary py-3 font-semibold text-primary-foreground">Reservar esta parcela</button>
+              <Button onClick={() => setConstruction(reserveConstructionSite(picked.nome, plot))} className="mt-4 h-auto w-full py-3 font-semibold">Reservar esta parcela</Button>
             </div>
           ) : (
             <button onClick={() => { setMode("orbita"); setZoomed(picked); setZoomTo(latLon(picked.lat, picked.lon, RADIUS + 0.22)); }} className="mt-5 w-full bg-primary py-3 font-semibold text-primary-foreground">Aproximar e escolher parcela</button>
@@ -196,6 +201,7 @@ export default function MarsMap3D() {
           <button onClick={() => { setPicked(null); setPlot(null); }} className="mt-2 w-full py-2 text-sm text-muted-foreground">Fechar</button>
         </div>
       )}
+      {construction && <HousePrinter3D site={construction} onBack={() => setConstruction(null)} />}
     </div>
   );
 }

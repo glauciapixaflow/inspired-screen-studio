@@ -11,6 +11,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Portal do investidor Red Planet Properties: acesse seus lotes em Marte." },
       { property: "og:title", content: "Acesse sua conta — Red Planet Properties" },
       { property: "og:description", content: "Portal do investidor Red Planet Properties." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Login,

@@ -14,6 +14,8 @@ export const Route = createFileRoute("/inicio")({
       { name: "description", content: "Lotes certificados nas regiões mais promissoras de Marte. Um patrimônio para atravessar gerações." },
       { property: "og:title", content: "Red Planet Properties — Seu pedaço do novo mundo" },
       { property: "og:description", content: "Lotes certificados nas regiões mais promissoras de Marte." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Index,
