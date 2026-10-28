@@ -36,7 +36,7 @@ function PrinterScene({ running, cycle, onProgress }: { running: boolean; cycle:
   const windows = useRef<THREE.Group | null>(null);
   useEffect(() => { elapsed.current = 0; lastReport.current = 0; onProgress(0); }, [cycle, onProgress]);
   useFrame((_, delta) => {
-    if (running) elapsed.current = Math.min(40, elapsed.current + Math.min(delta, 0.1));
+    if (running) elapsed.current = Math.min(40, elapsed.current + delta);
     const progress = elapsed.current / 40;
     const currentLayer = Math.min(49, Math.floor(progress * 50));
     layers.current.forEach((layer, index) => { if (layer) layer.visible = index < currentLayer || progress === 1; });
