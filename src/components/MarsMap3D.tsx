@@ -153,7 +153,7 @@ export default function MarsMap3D() {
         <directionalLight position={[5, 3, 5]} intensity={2.2} />
         <Stars radius={60} depth={30} count={3000} factor={3} fade />
         <Planet />
-        <Markers onPick={(l) => { setPicked(l); setPlot(null); }} />
+        {!zoomed && <Markers onPick={(l) => { setPicked(l); setPlot(null); }} />}
         {mode === "orbita" && <OrbitControls ref={controls} enablePan={false} minDistance={2.12} maxDistance={10} zoomSpeed={0.6} />}
         <Zoomer target={zoomTo} controls={controls} onDone={() => setZoomTo(null)} />
         {zoomed && <Plots lote={zoomed} selected={plot} onSelect={setPlot} />}
