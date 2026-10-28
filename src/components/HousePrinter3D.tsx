@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Pause, Play, RotateCcw, Printer } from "lucide-react";
@@ -23,6 +23,12 @@ function Block({ position, size, color }: BoxProps) {
 }
 
 function PrinterScene({ running, cycle, onProgress }: { running: boolean; cycle: number; onProgress: (p: number) => void }) {
+  const { camera, size } = useThree();
+  useEffect(() => {
+    const narrow = size.width / size.height < 0.8;
+    camera.position.set(narrow ? 19 : 10, narrow ? 12 : 7, narrow ? 21 : 11);
+    camera.lookAt(0, 1.6, 0);
+  }, [camera, size.width, size.height]);
   const colors = useMemo(() => ({
     soil: sceneColor("--printer-soil"), concrete: sceneColor("--printer-concrete"),
     metal: sceneColor("--printer-metal"), glass: sceneColor("--printer-glass"),
