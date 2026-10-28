@@ -6,6 +6,10 @@ import mars from "@/assets/mars.jpg";
 import l1 from "@/assets/lote1.jpg";
 import l2 from "@/assets/lote2.jpg";
 import l3 from "@/assets/lote3.jpg";
+import l4 from "@/assets/lote4.jpg";
+import l5 from "@/assets/lote5.jpg";
+import l6 from "@/assets/lote6.jpg";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/inicio")({
   head: () => ({
@@ -25,6 +29,9 @@ const lotes = [
   { img: l1, tag: "Mais procurado", local: "Planície de Elysium", nome: "Ares Vista 04", area: "2.400 m²", preco: "R$ 189 mil" },
   { img: l2, tag: "Vista privilegiada", local: "Encosta do Olympus Mons", nome: "Olympus 17", area: "4.850 m²", preco: "R$ 312 mil" },
   { img: l3, tag: "Novo setor", local: "Valles Marineris", nome: "Vallis Prime 21", area: "3.100 m²", preco: "R$ 247 mil" },
+  { img: l4, tag: "Novo destaque", local: "Arcadia Planitia", nome: "Arcadia Horizon 27", area: null, preco: null },
+  { img: l5, tag: "Novo destaque", local: "Utopia Planitia", nome: "Utopia Reserve 32", area: null, preco: null },
+  { img: l6, tag: "Novo destaque", local: "Isidis Planitia", nome: "Isidis Panorama 36", area: null, preco: null },
 ];
 
 const passos = [
@@ -80,17 +87,17 @@ function Index() {
               <div className="relative aspect-[1.07] overflow-hidden">
                 <img src={l.img} alt={l.nome} loading="lazy" width={768} height={896} className="size-full object-cover transition duration-700 group-hover:scale-105" />
                 <span className="absolute left-6 top-6 font-semibold tracking-widest text-ink-foreground">0{i + 1}</span>
-                <button onClick={() => setFav((f) => (f.includes(i) ? f.filter((x) => x !== i) : [...f, i]))} aria-label="Favoritar" className="absolute right-6 top-6 grid size-12 place-items-center rounded-full border border-ink-foreground/60 text-ink-foreground backdrop-blur">
+                <Button variant="ghost" size="icon" onClick={() => setFav((f) => (f.includes(i) ? f.filter((x) => x !== i) : [...f, i]))} aria-label={`Favoritar ${l.nome}`} aria-pressed={fav.includes(i)} className="absolute right-6 top-6 grid size-12 place-items-center rounded-full border border-ink-foreground/60 text-ink-foreground backdrop-blur">
                   <Heart size={20} className={fav.includes(i) ? "fill-primary text-primary" : ""} />
-                </button>
+                </Button>
                 <span className="eyebrow absolute bottom-6 left-6 bg-lime px-3 py-2 text-[0.65rem] text-lime-foreground">{l.tag}</span>
               </div>
               <div className="p-8">
-                <p className="eyebrow flex items-center gap-2 text-[0.7rem] font-medium text-muted-foreground"><MapPin size={16} />{l.local}</p>
+                <p className="eyebrow flex items-start gap-2 text-[0.7rem] font-medium text-muted-foreground"><MapPin size={16} className="shrink-0" />{l.local}</p>
                 <h3 className="mt-6 text-3xl tracking-tight">{l.nome}</h3>
-                <div className="mt-8 flex items-end justify-between border-t border-border pt-6">
-                  <span className="flex items-center gap-2 text-sm text-muted-foreground"><Maximize2 size={14} />{l.area}</span>
-                  <span className="text-right text-sm text-muted-foreground">A partir de<br /><b className="text-lg text-foreground">{l.preco}</b></span>
+                <div className="mt-8 flex flex-wrap items-end justify-between gap-3 border-t border-border pt-6">
+                  <span className="flex items-center gap-2 text-sm text-muted-foreground"><Maximize2 size={14} className="shrink-0" />{l.area ?? "Área a definir"}</span>
+                  <span className="text-right text-sm text-muted-foreground">{l.preco ? <>A partir de<br /><b className="text-lg text-foreground">{l.preco}</b></> : "Valor a definir"}</span>
                 </div>
               </div>
             </article>
