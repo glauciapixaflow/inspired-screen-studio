@@ -2,6 +2,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Stars, Html } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 
 // Feel constants
 const RADIUS = 2;
@@ -148,14 +149,16 @@ export default function MarsMap3D() {
         <directionalLight position={[5, 3, 5]} intensity={2.2} />
         <Stars radius={60} depth={30} count={3000} factor={3} fade />
         <Planet />
-        <Markers onPick={setPicked} />
-        {mode === "orbita" && <OrbitControls enablePan={false} minDistance={2.4} maxDistance={10} />}
+        <Markers onPick={(l) => { setPicked(l); setPlot(null); }} />
+        {mode === "orbita" && <OrbitControls ref={controls} enablePan={false} minDistance={2.12} maxDistance={10} zoomSpeed={0.6} />}
+        <Zoomer target={zoomTo} controls={controls} onDone={() => setZoomTo(null)} />
+        {zoomed && <Plots lote={zoomed} selected={plot} onSelect={setPlot} />}
         <Flight active={mode === "voo"} fly={fly} />
       </Canvas>
 
       <div className="absolute left-6 top-6 flex gap-2">
-        <button onClick={() => setMode("orbita")} className={`px-5 py-3 text-sm font-semibold ${mode === "orbita" ? "bg-lime text-lime-foreground" : "bg-ink/80 text-ink-foreground"}`}>Órbita</button>
-        <button onClick={() => startFlight(picked ?? undefined)} className={`px-5 py-3 text-sm font-semibold ${mode === "voo" ? "bg-lime text-lime-foreground" : "bg-ink/80 text-ink-foreground"}`}>Voar sobre Marte</button>
+        <button onClick={() => { setMode("orbita"); setZoomed(null); setZoomTo(new THREE.Vector3(0, 1, 6)); }} className={`px-5 py-3 text-sm font-semibold ${mode === "orbita" ? "bg-lime text-lime-foreground" : "bg-ink/80 text-ink-foreground"}`}>Órbita</button>
+        <button onClick={() => { setZoomed(null); startFlight(picked ?? undefined); }} className={`px-5 py-3 text-sm font-semibold ${mode === "voo" ? "bg-lime text-lime-foreground" : "bg-ink/80 text-ink-foreground"}`}>Voar sobre Marte</button>
       </div>
 
       {mode === "voo" && (
@@ -166,15 +169,68 @@ export default function MarsMap3D() {
         </div>
       )}
 
+      {zoomed && mode === "orbita" && (
+        <p className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-ink/80 px-5 py-3 text-xs tracking-[0.2em] text-ink-foreground">CLIQUE EM UMA PARCELA PARA ESCOLHER</p>
+      )}
+
       {picked && (
         <div className="absolute right-6 top-6 w-72 bg-background p-6 text-foreground">
-          <p className="eyebrow text-muted-foreground">Lote {picked.id}</p>
+          <p className="eyebrow text-muted-foreground">Região {picked.id}</p>
           <h3 className="mt-3 text-2xl">{picked.nome}</h3>
           <p className="mt-2 text-sm text-muted-foreground">A partir de <b className="text-foreground">{picked.preco}</b></p>
-          <button onClick={() => startFlight(picked)} className="mt-5 w-full bg-primary py-3 font-semibold text-primary-foreground">Voar até aqui</button>
-          <button onClick={() => setPicked(null)} className="mt-2 w-full py-2 text-sm text-muted-foreground">Fechar</button>
+          {plot ? (
+            <div className="mt-5 border-t border-border pt-5">
+              <p className="eyebrow text-muted-foreground">Parcela escolhida</p>
+              <p className="mt-2 text-xl">{picked.nome} · {plot}</p>
+              <p className="text-sm text-muted-foreground">2.400 m²</p>
+              <button onClick={() => alert(`Reserva da parcela ${plot} em ${picked.nome} solicitada!`)} className="mt-4 w-full bg-primary py-3 font-semibold text-primary-foreground">Reservar esta parcela</button>
+            </div>
+          ) : (
+            <button onClick={() => { setMode("orbita"); setZoomed(picked); setZoomTo(latLon(picked.lat, picked.lon, RADIUS + 0.22)); }} className="mt-5 w-full bg-primary py-3 font-semibold text-primary-foreground">Aproximar e escolher parcela</button>
+          )}
+          <button onClick={() => { setZoomed(null); startFlight(picked); }} className="mt-2 w-full border border-foreground/40 py-3 font-semibold">Voar até aqui</button>
+          <button onClick={() => { setPicked(null); setPlot(null); }} className="mt-2 w-full py-2 text-sm text-muted-foreground">Fechar</button>
         </div>
       )}
     </div>
+  );
+}
+
+// Smoothly moves the orbit camera to a target position
+function Zoomer({ target, controls, onDone }: { target: THREE.Vector3 | null; controls: React.RefObject<OrbitControlsImpl | null>; onDone: () => void }) {
+  const { camera } = useThree();
+  useFrame((_, delta) => {
+    if (!target) return;
+    camera.up.set(0, 1, 0);
+    camera.position.lerp(target, 1 - Math.exp(-4 * Math.min(delta, 0.05)));
+    camera.lookAt(0, 0, 0);
+    controls.current?.update();
+    if (camera.position.distanceTo(target) < 0.005) onDone();
+  });
+  return null;
+}
+
+const ROWS = ["A", "B", "C", "D"];
+// Grid of purchasable parcels on the surface around a region
+function Plots({ lote, selected, onSelect }: { lote: Lote; selected: string | null; onSelect: (p: string) => void }) {
+  const { pos, quat } = useMemo(() => {
+    const p = latLon(lote.lat, lote.lon, RADIUS * 1.002);
+    const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), p.clone().normalize());
+    return { pos: p, quat: q };
+  }, [lote]);
+  const S = 0.028;
+  return (
+    <group position={pos} quaternion={quat}>
+      {ROWS.flatMap((r, i) => [1, 2, 3, 4].map((c, j) => {
+        const id = `${r}${c}`;
+        const on = selected === id;
+        return (
+          <mesh key={id} position={[(j - 1.5) * S * 1.15, (i - 1.5) * S * 1.15, 0]} onClick={(e) => { e.stopPropagation(); onSelect(id); }}>
+            <planeGeometry args={[S, S]} />
+            <meshBasicMaterial color={on ? "#c8f040" : "#f4e9dc"} transparent opacity={on ? 0.85 : 0.3} side={THREE.DoubleSide} />
+          </mesh>
+        );
+      }))}
+    </group>
   );
 }
