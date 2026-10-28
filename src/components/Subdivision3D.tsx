@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import FuturisticHouse, { sceneColor } from "@/components/FuturisticHouse";
 import type { ConstructionSite } from "@/lib/construction";
 import { SUBDIVISION_PARCELS, subdivisionHomes } from "@/lib/subdivision";
+import SubdivisionInfrastructure from "@/components/SubdivisionInfrastructure";
 
 type View = "overview" | "home" | "top";
 
@@ -85,7 +86,8 @@ function Neighborhood({ site, homes, view, selected, onSelect, onReady }: {
         <ParcelLabel id={parcel.id} yours={yours} color={yours ? colors.accent : colors.text} />
       </group>;
     })}
-    <OrbitControls ref={controls} makeDefault minDistance={9} maxDistance={150} maxPolarAngle={Math.PI / 2 - 0.04} enablePan />
+    <SubdivisionInfrastructure />
+    <OrbitControls ref={controls} makeDefault minDistance={9} maxDistance={180} maxPolarAngle={Math.PI / 2 - 0.04} enablePan />
   </>;
 }
 
