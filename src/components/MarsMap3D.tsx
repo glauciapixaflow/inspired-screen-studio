@@ -34,7 +34,7 @@ function makeMarsTexture() {
   const G = 64, grid = Array.from({ length: G * G }, rnd);
   const n = (x: number, y: number) => {
     const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi;
-    const g = (a: number, b: number) => grid[((b % G) + G) % G * G + (((a % G) + G) % G)];
+    const g = (a: number, b: number) => grid[((b % G) + G) % G * G + (((a % G) + G) % G)] ?? 0;
     const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
     return (g(xi, yi) * (1 - u) + g(xi + 1, yi) * u) * (1 - v) + (g(xi, yi + 1) * (1 - u) + g(xi + 1, yi + 1) * u) * v;
   };
