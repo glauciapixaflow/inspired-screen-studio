@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, OrbitControls } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Building2, Focus, Map, Orbit } from "lucide-react";
+import { ArrowLeft, Focus, Map, Orbit } from "lucide-react";
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,7 @@ function Neighborhood({ site, homes, view, selected, onSelect, onReady }: {
     camera.up.set(0, 1, 0);
     if (view === "home") camera.position.copy(target).add(new THREE.Vector3(mobile ? 15 : 10, mobile ? 15 : 9, mobile ? 20 : 13));
     else if (view === "top") camera.position.set(0, mobile ? 100 : 72, 0.01);
-    else camera.position.set(mobile ? 62 : 42, mobile ? 78 : 53, mobile ? 76 : 51);
+    else camera.position.set(mobile ? 85 : 42, mobile ? 100 : 53, mobile ? 100 : 51);
     camera.lookAt(target); controls.current?.target.copy(target); controls.current?.update(); invalidate();
   }, [view, site.parcel, camera, size.width, size.height, invalidate]);
   const built = subdivisionHomes(site.region, homes);
