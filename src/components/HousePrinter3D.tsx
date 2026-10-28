@@ -13,7 +13,7 @@ function Block({ position, size, color }: BoxProps) {
   return <mesh position={position} castShadow receiveShadow><boxGeometry args={size} /><meshStandardMaterial color={color} roughness={0.85} /></mesh>;
 }
 
-function PrinterScene({ running, cycle, onProgress }: { running: boolean; cycle: number; onProgress: (p: number) => void }) {
+function PrinterScene({ running, cycle, initialComplete, onProgress }: { running: boolean; cycle: number; initialComplete: boolean; onProgress: (p: number) => void }) {
   const { camera, size } = useThree();
   useEffect(() => {
     const narrow = size.width / size.height < 0.8;
@@ -27,12 +27,12 @@ function PrinterScene({ running, cycle, onProgress }: { running: boolean; cycle:
   }), []);
   const elapsed = useRef(0);
   const lastReport = useRef(0);
-  const [buildProgress, setBuildProgress] = useState(0);
+  const [buildProgress, setBuildProgress] = useState(initialComplete ? 1 : 0);
   const printer = useRef<THREE.Group | null>(null);
   const head = useRef<THREE.Group | null>(null);
   const bridge = useRef<THREE.Group | null>(null);
 
-  useEffect(() => { elapsed.current = 0; lastReport.current = 0; onProgress(0); }, [cycle, onProgress]);
+  useEffect(() => { const start = initialComplete && cycle === 0 ? 40 : 0; elapsed.current = start; lastReport.current = 0; setBuildProgress(start / 40); onProgress(start / 40); }, [cycle, initialComplete, onProgress]);
   useFrame((_, delta) => {
     if (running) elapsed.current = Math.min(40, elapsed.current + delta);
     const progress = elapsed.current / 40;
@@ -81,15 +81,15 @@ function PrinterScene({ running, cycle, onProgress }: { running: boolean; cycle:
   </>;
 }
 
-export default function HousePrinter3D({ site, onBack, onComplete }: { site: ConstructionSite; onBack: () => void; onComplete: (site: ConstructionSite) => void }) {
-  const [progress, setProgress] = useState(0);
+export default function HousePrinter3D({ site, onBack, onComplete, initialComplete = false }: { site: ConstructionSite; onBack: () => void; onComplete: (site: ConstructionSite) => void; initialComplete?: boolean }) {
+  const [progress, setProgress] = useState(initialComplete ? 1 : 0);
   const [running, setRunning] = useState(true);
   const [cycle, setCycle] = useState(0);
   useEffect(() => { if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setRunning(false); }, []);
   const complete = progress >= 1;
   useEffect(() => { if (complete) onComplete(site); }, [complete, onComplete, site]);
   return <section className="absolute inset-0 z-30 bg-construction-surface text-construction-text" aria-label="Impressão 3D da casa">
-    <Canvas shadows onCreated={({ gl }) => { gl.localClippingEnabled = true; }} camera={{ position: [10, 7, 11], fov: 46 }}><PrinterScene running={running && !complete} cycle={cycle} onProgress={setProgress} /></Canvas>
+    <Canvas shadows onCreated={({ gl }) => { gl.localClippingEnabled = true; }} camera={{ position: [10, 7, 11], fov: 46 }}><PrinterScene running={running && !complete} cycle={cycle} initialComplete={initialComplete} onProgress={setProgress} /></Canvas>
     <header className="pointer-events-none absolute inset-x-0 top-0 flex flex-wrap items-start justify-between gap-4 p-4 sm:p-6">
       <div>
         <p className="text-xs font-semibold uppercase">Red Planet Properties · Simulação 3D</p>

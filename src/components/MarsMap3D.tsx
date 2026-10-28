@@ -186,7 +186,7 @@ export default function MarsMap3D() {
       )}
 
       {picked && (
-        <div className="absolute right-4 top-20 w-64 bg-background p-4 text-foreground sm:right-6 sm:top-6 sm:w-72 sm:p-6">
+        <div className={`absolute right-4 w-64 bg-background p-4 text-foreground sm:right-6 sm:top-6 sm:w-72 sm:p-6 ${completedHomes.some(home => home.region === picked.nome && home.parcel === plot) ? "bottom-20 sm:bottom-auto" : "top-20"}`}>
           <p className="eyebrow text-muted-foreground">Região {picked.id}</p>
           <h3 className="mt-3 text-2xl">{picked.nome}</h3>
           <p className="mt-2 text-sm text-muted-foreground">A partir de <b className="text-foreground">{picked.preco}</b></p>
@@ -205,7 +205,7 @@ export default function MarsMap3D() {
           <button onClick={() => { setPicked(null); setPlot(null); }} className="mt-2 w-full py-2 text-sm text-muted-foreground">Fechar</button>
         </div>
       )}
-      {construction && <HousePrinter3D site={construction} onComplete={onComplete} onBack={() => setConstruction(null)} />}
+      {construction && <HousePrinter3D site={construction} initialComplete={completedHomes.some(home => home.region === construction.region && home.parcel === construction.parcel)} onComplete={onComplete} onBack={() => setConstruction(null)} />}
     </div>
   );
 }
