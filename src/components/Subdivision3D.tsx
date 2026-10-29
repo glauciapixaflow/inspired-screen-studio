@@ -63,7 +63,7 @@ function Neighborhood({ site, homes, view, selected, onSelect, onReady }: {
     if (view === "home") camera.position.copy(target).add(new THREE.Vector3(mobile ? 15 : 10, mobile ? 15 : 9, mobile ? 20 : 13));
     else if (place) camera.position.copy(target).add(new THREE.Vector3(mobile ? 42 : 30, mobile ? 50 : 30, mobile ? 55 : 40));
     else if (view === "top") camera.position.set(0, mobile ? 245 : 180, -24.99);
-    else camera.position.set(mobile ? 150 : 110, mobile ? 175 : 115, mobile ? 155 : 105);
+    else camera.position.set(mobile ? 240 : 110, mobile ? 250 : 115, mobile ? 220 : 105);
     camera.lookAt(target); controls.current?.target.copy(target); controls.current?.update(); invalidate();
   }, [view, site.parcel, camera, size.width, size.height, invalidate]);
   const built = subdivisionHomes(site.region, homes);
@@ -108,7 +108,7 @@ export default function Subdivision3D({ site, homes, onBack }: { site: Construct
       <div><p className="text-xs uppercase">Red Planet Properties</p><h1 className="mt-2 text-2xl font-semibold sm:text-3xl">Loteamento {site.region}</h1><p className="mt-2 text-sm">Sua casa · Parcela {site.parcel}</p></div>
       <Button variant="secondary" onClick={onBack} className="pointer-events-auto"><ArrowLeft /> Voltar a Marte</Button>
     </header>
-    <nav className="absolute left-4 top-36 flex max-w-[calc(100%-2rem)] flex-wrap gap-2 sm:left-6 sm:top-32" aria-label="Destinos da vizinhança">
+    <nav className="absolute left-4 top-40 flex max-w-[calc(100%-2rem)] flex-wrap gap-2 sm:left-6 sm:top-32" aria-label="Destinos da vizinhança">
       <Button size="sm" variant={view === "aurora" ? "default" : "secondary"} onClick={() => setView("aurora")}><Building2 /> Aurora</Button>
       <Button size="sm" variant={view === "horizonte" ? "default" : "secondary"} onClick={() => setView("horizonte")}><Building2 /> Horizonte</Button>
       <Button size="sm" variant={view === "library" ? "default" : "secondary"} onClick={() => setView("library")}><BookOpen /> Megabiblioteca</Button>
