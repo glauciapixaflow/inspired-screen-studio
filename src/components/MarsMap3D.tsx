@@ -214,7 +214,7 @@ export default function MarsMap3D() {
           <button onClick={() => { setPicked(null); setPlot(null); }} className="mt-2 w-full py-2 text-sm text-muted-foreground">Fechar</button>
         </div>
       )}
-      {construction && !subdivision && <HousePrinter3D site={construction} initialComplete={completedHomes.some(home => home.region === construction.region && home.parcel === construction.parcel)} onComplete={onComplete} onSubdivision={() => { setSubdivision(construction); setConstruction(null); }} onBack={() => setConstruction(null)} />}
+      {construction && !subdivision && <HousePrinter3D site={construction} homes={completedHomes} initialComplete={completedHomes.some(home => home.region === construction.region && home.parcel === construction.parcel)} onComplete={onComplete} onSubdivision={() => { setSubdivision(construction); setConstruction(null); }} onBack={() => setConstruction(null)} />}
       {subdivision && <Subdivision3D site={subdivision} homes={completedHomes} onBack={() => setSubdivision(null)} />}
     </div>
   );
