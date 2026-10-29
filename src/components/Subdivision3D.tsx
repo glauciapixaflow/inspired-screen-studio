@@ -112,7 +112,7 @@ export default function Subdivision3D({ site, homes, onBack }: { site: Construct
       <Button size="sm" variant={view === "aurora" ? "default" : "secondary"} onClick={() => setView("aurora")}><Building2 /> Aurora</Button>
       <Button size="sm" variant={view === "horizonte" ? "default" : "secondary"} onClick={() => setView("horizonte")}><Building2 /> Horizonte</Button>
       <Button size="sm" variant={view === "library" ? "default" : "secondary"} onClick={() => setView("library")}><BookOpen /> Megabiblioteca</Button>
-      <Button size="sm" variant={view === "leisure" ? "default" : "secondary"} onClick={() => setView("leisure")}><Sparkles /> Lazer Orbital</Button>
+      <Button size="sm" variant={view === "leisure" ? "default" : "secondary"} onClick={() => setView("leisure")}><Sparkles /> Laser Orbital</Button>
       <Button size="sm" variant={view === "sports" ? "default" : "secondary"} onClick={() => setView("sports")}><Trophy /> Arena Solaris</Button>
     </nav>
     <footer className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-3 border-t border-construction-text/20 bg-construction-surface/95 p-4 sm:p-6">
