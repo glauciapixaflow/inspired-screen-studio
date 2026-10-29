@@ -93,7 +93,7 @@ function Neighborhood({ site, homes, view, selected, onSelect, onReady }: {
     })}
     <SubdivisionInfrastructure />
     <NeighborhoodExpansion />
-    <OrbitControls ref={controls} makeDefault minDistance={9} maxDistance={320} maxPolarAngle={Math.PI / 2 - 0.04} enablePan />
+    <OrbitControls ref={controls} makeDefault minDistance={9} maxDistance={480} maxPolarAngle={Math.PI / 2 - 0.04} enablePan />
   </>;
 }
 
