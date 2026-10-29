@@ -73,7 +73,7 @@ function CivicBuildings() {
         <mesh position={[0, 0.45, 0]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[8, 48]} /><meshPhysicalMaterial color={colors.water} metalness={0.25} roughness={0.08} clearcoat={1} /></mesh>
         <mesh position={[0, 0.55, 0]} rotation={[-Math.PI / 2, 0, 0]}><torusGeometry args={[8.3, 0.3, 8, 48]} /><meshStandardMaterial color={colors.gold} /></mesh>
       </>}
-      <DistrictLabel name={place.id === "sports" ? "Arena Solaris" : "Lazer Orbital"} />
+      <DistrictLabel name={place.id === "sports" ? "Arena Solaris" : "Laser Orbital"} />
     </group>)}
   </>;
 }
