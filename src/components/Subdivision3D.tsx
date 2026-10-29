@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, OrbitControls } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Focus, Map, Orbit } from "lucide-react";
+import { ArrowLeft, Focus, Map, Orbit, BookOpen, Sparkles, Trophy, Building2 } from "lucide-react";
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,10 @@ import type { ConstructionSite } from "@/lib/construction";
 import { SUBDIVISION_PARCELS, subdivisionHomes } from "@/lib/subdivision";
 import SubdivisionInfrastructure from "@/components/SubdivisionInfrastructure";
 import SubdivisionTerrain from "@/components/SubdivisionTerrain";
+import NeighborhoodExpansion from "@/components/NeighborhoodExpansion";
+import { CIVIC_DESTINATIONS, NEIGHBORING_SUBDIVISIONS, type NeighborhoodDestination } from "@/lib/neighborhood";
 
-type View = "overview" | "home" | "top";
+type View = NeighborhoodDestination;
 
 function ParcelLabel({ id, yours, color }: { id: string; yours: boolean; color: THREE.Color }) {
   const texture = useMemo(() => {
@@ -55,11 +57,13 @@ function Neighborhood({ site, homes, view, selected, onSelect, onReady }: {
   useEffect(() => {
     const home = SUBDIVISION_PARCELS.find(parcel => parcel.id === site.parcel);
     const mobile = size.width / size.height < 0.85;
-    const target = view === "home" && home ? new THREE.Vector3(home.x, 1, home.z) : new THREE.Vector3();
+    const place = [...CIVIC_DESTINATIONS, ...NEIGHBORING_SUBDIVISIONS].find(place => place.id === view);
+    const target = view === "home" && home ? new THREE.Vector3(home.x, 1, home.z) : place ? new THREE.Vector3(place.x, 3, place.z) : new THREE.Vector3(0, 0, -25);
     camera.up.set(0, 1, 0);
     if (view === "home") camera.position.copy(target).add(new THREE.Vector3(mobile ? 15 : 10, mobile ? 15 : 9, mobile ? 20 : 13));
-    else if (view === "top") camera.position.set(0, mobile ? 100 : 72, 0.01);
-    else camera.position.set(mobile ? 85 : 42, mobile ? 100 : 53, mobile ? 100 : 51);
+    else if (place) camera.position.copy(target).add(new THREE.Vector3(mobile ? 42 : 30, mobile ? 50 : 30, mobile ? 55 : 40));
+    else if (view === "top") camera.position.set(0, mobile ? 245 : 180, -24.99);
+    else camera.position.set(mobile ? 150 : 110, mobile ? 175 : 115, mobile ? 155 : 105);
     camera.lookAt(target); controls.current?.target.copy(target); controls.current?.update(); invalidate();
   }, [view, site.parcel, camera, size.width, size.height, invalidate]);
   const built = subdivisionHomes(site.region, homes);
@@ -88,7 +92,8 @@ function Neighborhood({ site, homes, view, selected, onSelect, onReady }: {
       </group>;
     })}
     <SubdivisionInfrastructure />
-    <OrbitControls ref={controls} makeDefault minDistance={9} maxDistance={180} maxPolarAngle={Math.PI / 2 - 0.04} enablePan />
+    <NeighborhoodExpansion />
+    <OrbitControls ref={controls} makeDefault minDistance={9} maxDistance={320} maxPolarAngle={Math.PI / 2 - 0.04} enablePan />
   </>;
 }
 
@@ -103,6 +108,13 @@ export default function Subdivision3D({ site, homes, onBack }: { site: Construct
       <div><p className="text-xs uppercase">Red Planet Properties</p><h1 className="mt-2 text-2xl font-semibold sm:text-3xl">Loteamento {site.region}</h1><p className="mt-2 text-sm">Sua casa · Parcela {site.parcel}</p></div>
       <Button variant="secondary" onClick={onBack} className="pointer-events-auto"><ArrowLeft /> Voltar a Marte</Button>
     </header>
+    <nav className="absolute left-4 top-36 flex max-w-[calc(100%-2rem)] flex-wrap gap-2 sm:left-6 sm:top-32" aria-label="Destinos da vizinhança">
+      <Button size="sm" variant={view === "aurora" ? "default" : "secondary"} onClick={() => setView("aurora")}><Building2 /> Aurora</Button>
+      <Button size="sm" variant={view === "horizonte" ? "default" : "secondary"} onClick={() => setView("horizonte")}><Building2 /> Horizonte</Button>
+      <Button size="sm" variant={view === "library" ? "default" : "secondary"} onClick={() => setView("library")}><BookOpen /> Megabiblioteca</Button>
+      <Button size="sm" variant={view === "leisure" ? "default" : "secondary"} onClick={() => setView("leisure")}><Sparkles /> Lazer Orbital</Button>
+      <Button size="sm" variant={view === "sports" ? "default" : "secondary"} onClick={() => setView("sports")}><Trophy /> Arena Solaris</Button>
+    </nav>
     <footer className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-3 border-t border-construction-text/20 bg-construction-surface/95 p-4 sm:p-6">
       <div className="text-sm"><p className="font-semibold">Parcela {selected} · {built ? "Casa concluída" : "Sem construção"}</p><p className="mt-1 text-xs text-construction-text/65">Loteamento ilustrativo · Reserva não salva</p></div>
       <div className="flex flex-wrap gap-2" aria-label="Vistas do loteamento">
