@@ -27,7 +27,7 @@ function roundedOutline(x: number, y: number, w: number, h: number, r: number) {
 }
 
 // A generated, print-ready capsule: the identical geometry is used on the parcel.
-export default function FuturisticHouse({ progress = 1 }: { progress?: number }) {
+export default function FuturisticHouse({ progress = 1, worldBase = 0, worldScale = 1 }: { progress?: number; worldBase?: number; worldScale?: number }) {
   const colors = useMemo(() => ({ shell: sceneColor("--printer-concrete"), metal: sceneColor("--printer-metal"), glass: sceneColor("--printer-glass"), light: sceneColor("--habitat-light"), solar: sceneColor("--habitat-solar") }), []);
   const { shell, glass, rib, texture } = useMemo(() => {
     const shell = roundedOutline(-2.4, 0.28, 4.8, 2.9, 0.85);
@@ -42,7 +42,7 @@ export default function FuturisticHouse({ progress = 1 }: { progress?: number })
     return { shell, glass: opening, rib, texture };
   }, []);
   const clip = useMemo(() => new THREE.Plane(new THREE.Vector3(0, -1, 0), 0), []);
-  clip.constant = 0.28 + progress * 3.05;
+  clip.constant = worldBase + worldScale * (0.28 + progress * 3.05);
   const clippingPlanes = progress < 1 ? [clip] : [];
   const material = { color: colors.shell, roughness: 0.48, metalness: 0.18, clippingPlanes };
   return <group name="futuristic-habitat">
