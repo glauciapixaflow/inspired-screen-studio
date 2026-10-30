@@ -10,6 +10,7 @@ import l4 from "@/assets/lote4.jpg";
 import l5 from "@/assets/lote5.jpg";
 import l6 from "@/assets/lote6.jpg";
 import { Button } from "@/components/ui/button";
+import { featuredOffer } from "@/lib/featured-pricing";
 
 export const Route = createFileRoute("/inicio")({
   head: () => ({
@@ -29,9 +30,9 @@ const lotes = [
   { img: l1, tag: "Mais procurado", local: "Planície de Elysium", nome: "Ares Vista 04", area: "2.400 m²", preco: "R$ 189 mil" },
   { img: l2, tag: "Vista privilegiada", local: "Encosta do Olympus Mons", nome: "Olympus 17", area: "4.850 m²", preco: "R$ 312 mil" },
   { img: l3, tag: "Novo setor", local: "Valles Marineris", nome: "Vallis Prime 21", area: "3.100 m²", preco: "R$ 247 mil" },
-  { img: l4, tag: "Novo destaque", local: "Arcadia Planitia", nome: "Arcadia Horizon 27", area: null, preco: null },
-  { img: l5, tag: "Novo destaque", local: "Utopia Planitia", nome: "Utopia Reserve 32", area: null, preco: null },
-  { img: l6, tag: "Novo destaque", local: "Isidis Planitia", nome: "Isidis Panorama 36", area: null, preco: null },
+  { img: l4, tag: "Novo destaque", local: "Arcadia Planitia", nome: "Arcadia Horizon 27", ...featuredOffer("arcadia") },
+  { img: l5, tag: "Novo destaque", local: "Utopia Planitia", nome: "Utopia Reserve 32", ...featuredOffer("utopia") },
+  { img: l6, tag: "Novo destaque", local: "Isidis Planitia", nome: "Isidis Panorama 36", ...featuredOffer("isidis") },
 ];
 
 const passos = [

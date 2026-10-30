@@ -16,3 +16,4 @@
 - Keep selectable Mars regions in a browser-safe data module shared by map controls and tests; regions without provided prices must not invent purchase values.
 - Render the post-print subdivision in a separate client-side scene with pure parcel layout data and session completed homes; this preserves Mars selection and exact house placement on return.
 - Keep nearby subdivision and civic destination coordinates in a browser-safe layout shared by terrain clearance, camera targets and tests; this prevents neighboring developments from intersecting terrain or moving reserved homes.
+- Keep authorized illustrative featured offers as numeric area and currency data in a browser-safe module, separate from regional map pricing; this supports comparison tests without implying a regional purchase quote.
