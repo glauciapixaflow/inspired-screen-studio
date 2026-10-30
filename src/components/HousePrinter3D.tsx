@@ -22,7 +22,7 @@ function PrinterScene({ site, homes, view, running, cycle, initialComplete, onPr
   onProgress: (p: number) => void; onReady: () => void;
 }) {
   const { camera, size } = useThree();
-  const position = useMemo(() => habitatPlacement(site.parcel) ?? [0, 0.12, -0.6], [site.parcel]);
+  const position = useMemo<[number, number, number]>(() => habitatPlacement(site.parcel) ?? [0, 0.12, -0.6], [site.parcel]);
   const controls = useRef<OrbitControlsImpl | null>(null);
   const userMoved = useRef(false);
   const ready = useRef(false);
