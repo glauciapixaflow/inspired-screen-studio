@@ -3,7 +3,7 @@ import { Environment, Lightformer } from "@react-three/drei";
 import * as THREE from "three";
 import FuturisticHouse, { sceneColor } from "@/components/FuturisticHouse";
 import type { ConstructionSite } from "@/lib/construction";
-import { SUBDIVISION_PARCELS, subdivisionHomes, HABITAT_SCALE } from "@/lib/subdivision";
+import { SUBDIVISION_PARCELS, subdivisionHomes, HABITAT_SCALE, habitatPlacement } from "@/lib/subdivision";
 import SubdivisionInfrastructure from "@/components/SubdivisionInfrastructure";
 import SubdivisionTerrain from "@/components/SubdivisionTerrain";
 import NeighborhoodExpansion from "@/components/NeighborhoodExpansion";
@@ -63,9 +63,12 @@ export default function SubdivisionEnvironment({ site, homes, selected = site.pa
           <mesh key={`x-${n}`} position={[n, 0.13, 0]}><boxGeometry args={[0.075, 0.07, 8.1]} /><meshStandardMaterial color={edge} /></mesh>,
           <mesh key={`z-${n}`} position={[0, 0.13, n]}><boxGeometry args={[8.1, 0.07, 0.075]} /><meshStandardMaterial color={edge} /></mesh>,
         ])}
-        {completed && parcel.id !== printingParcel && <group position={[0, 0.12, -0.6]} scale={HABITAT_SCALE}><FuturisticHouse /></group>}
         <ParcelLabel id={parcel.id} yours={yours} color={yours ? colors.accent : colors.text} />
       </group>;
+    })}
+    {built.filter(parcel => parcel.id !== printingParcel).map(parcel => {
+      const position = habitatPlacement(parcel.id);
+      return position ? <group key={parcel.id} position={position} scale={HABITAT_SCALE}><FuturisticHouse /></group> : null;
     })}
     <SubdivisionInfrastructure />
     <NeighborhoodExpansion />
