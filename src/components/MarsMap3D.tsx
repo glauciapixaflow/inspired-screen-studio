@@ -112,7 +112,7 @@ function Flight({ active, fly }: { active: boolean; fly: React.MutableRefObject<
   return null;
 }
 
-export default function MarsMap3D() {
+export default function MarsMap3D({ initialRegion }: { initialRegion?: string | undefined }) {
   const [mode, setMode] = useState<"orbita" | "voo">("orbita");
   const [picked, setPicked] = useState<Lote | null>(null);
   const [plot, setPlot] = useState<string | null>(null);
@@ -124,6 +124,13 @@ export default function MarsMap3D() {
   const onComplete = useCallback((site: ConstructionSite) => setCompletedHomes(sites => completeConstruction(sites, site, 1)), []);
   const controls = useRef<OrbitControlsImpl | null>(null);
   const fly = useRef<FlyState>({ pos: latLon(0, 0, RADIUS), dir: new THREE.Vector3(0, 1, 0), turn: 0 });
+
+  useEffect(() => {
+    const region = LOTES.find(region => region.id === initialRegion);
+    if (!region) return;
+    setPicked(region); setPlot(null); setMode("orbita"); setZoomed(region);
+    setZoomTo(latLon(region.lat, region.lon, RADIUS + 0.22));
+  }, [initialRegion]);
 
   const startFlight = (l?: Lote) => {
     const p = latLon(l?.lat ?? 0, (l?.lon ?? 0) - 25, RADIUS);

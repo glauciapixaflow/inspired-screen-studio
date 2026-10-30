@@ -4,6 +4,8 @@ import MarsMap3D from "@/components/MarsMap3D";
 
 export const Route = createFileRoute("/mapa")({
   ssr: false,
+  validateSearch: (search: Record<string, unknown>): { region?: string } =>
+    typeof search.region === "string" ? { region: search.region } : {},
   head: () => ({
     meta: [
       { title: "Mapa 3D de Marte — Red Planet Properties" },
@@ -14,12 +16,17 @@ export const Route = createFileRoute("/mapa")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => (
+  component: MapPage,
+});
+
+function MapPage() {
+  const { region } = Route.useSearch();
+  return (
     <div className="relative h-screen w-screen">
-      <MarsMap3D />
+      <MarsMap3D initialRegion={region} />
       <Link to="/inicio" className="absolute bottom-6 left-6 flex items-center gap-2 bg-ink/80 px-5 py-3 text-sm font-semibold text-ink-foreground">
         <ArrowLeft size={16} /> Voltar
       </Link>
     </div>
-  ),
-});
+  );
+}
