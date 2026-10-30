@@ -1,6 +1,6 @@
 # Tasks
-- [ ] Contextualize printing on the exact parcel using the shared subdivision surroundings and faster animation.
-- [ ] Verify printing, pause, completion, neighborhood continuity and mobile framing.
+- [x] Contextualize printing on the exact parcel using the shared subdivision surroundings and faster animation.
+- [x] Verify printing, pause, completion, neighborhood continuity and mobile framing.
 - [x] Expand the local scene with neighboring subdivisions, a futuristic mega library and nearby leisure centers.
 - [x] Verify the printing-to-neighborhood flow, landmark camera views and terrain clearance.
 - [x] Show a 3D house printer after parcel reservation, preserving the selected region and parcel.
