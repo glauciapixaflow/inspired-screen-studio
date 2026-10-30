@@ -6,7 +6,7 @@ export const NEIGHBORING_SUBDIVISIONS = [
 
 export const CIVIC_DESTINATIONS = [
   { id: "library", name: "Megabiblioteca", x: 0, z: -65, radius: 23 },
-  { id: "leisure", name: "Centro de laser Orbital", x: -50, z: -62, radius: 17 },
+  { id: "leisure", name: "Centro de lazer Orbital", x: -50, z: -62, radius: 17 },
   { id: "sports", name: "Arena esportiva Solaris", x: 50, z: -62, radius: 17 },
 ] as const;
 
