@@ -29,7 +29,7 @@ function PrinterScene({ site, homes, view, running, cycle, initialComplete, onPr
   const cameraTime = useRef(0);
   const setCamera = (wide: boolean, blend = 1) => {
     const narrow = size.width / size.height < 0.8;
-    const close = new THREE.Vector3(position[0] + (narrow ? 25 : 16), narrow ? 21 : 13, position[2] + (narrow ? 34 : 24));
+    const close = new THREE.Vector3(position[0] + (narrow ? 22 : 10), narrow ? 38 : 27, position[2] + (narrow ? 28 : 18));
     const far = new THREE.Vector3(narrow ? 170 : 85, narrow ? 170 : 75, narrow ? 170 : 95);
     const target = wide ? new THREE.Vector3(0, 0, -25) : new THREE.Vector3(position[0], 2, position[2] - 3);
     const destination = wide ? far : far.lerp(close, blend);
