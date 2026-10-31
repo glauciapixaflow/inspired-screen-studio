@@ -18,3 +18,4 @@
 - Keep nearby subdivision and civic destination coordinates in a browser-safe layout shared by terrain clearance, camera targets and tests; this prevents neighboring developments from intersecting terrain or moving reserved homes.
 - Keep authorized illustrative featured offers as numeric area and currency data in a browser-safe module, separate from regional map pricing; this supports comparison tests without implying a regional purchase quote.
 - Featured lot links pass the region identifier through the map route's validated search parameters; this opens the matching region without persisting a reservation.
+- Civic interior tours use a separate client-only scene with browser-safe waypoint data; neighborhood view and parcel state remain in Subdivision3D so returning restores the selected destination without creating reservations.
