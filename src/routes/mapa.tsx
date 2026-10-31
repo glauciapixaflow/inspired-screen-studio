@@ -5,7 +5,7 @@ import MarsMap3D from "@/components/MarsMap3D";
 export const Route = createFileRoute("/mapa")({
   ssr: false,
   validateSearch: (search: Record<string, unknown>): { region?: string } =>
-    typeof search.region === "string" ? { region: search.region } : {},
+    typeof search["region"] === "string" ? { region: search["region"] } : {},
   head: () => ({
     meta: [
       { title: "Mapa 3D de Marte — Red Planet Properties" },
