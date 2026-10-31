@@ -1,6 +1,6 @@
 # Tasks
-- [ ] Improve home layout across phone/tablet widths and add featured-lot map interactions.
-- [ ] Verify featured-lot navigation, favorites and mobile layout.
+- [x] Improve home layout across phone/tablet widths and add featured-lot map interactions.
+- [x] Verify featured-lot navigation, favorites and mobile layout.
 - [x] Contextualize printing on the exact parcel using the shared subdivision surroundings and faster animation.
 - [x] Verify printing, pause, completion, neighborhood continuity and mobile framing.
 - [x] Expand the local scene with neighboring subdivisions, a futuristic mega library and nearby leisure centers.

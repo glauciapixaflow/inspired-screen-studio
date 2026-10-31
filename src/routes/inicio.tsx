@@ -65,7 +65,7 @@ function Index() {
         </header>
         {menuOpen && <nav className="grid grid-cols-2 gap-2 border-b border-ink-foreground/15 py-4 lg:hidden" aria-label="Menu principal">
           {[['#lotes', 'Lotes'], ['#como', 'Como funciona'], ['#mapa', 'Mapa de Marte'], ['#contato', 'Especialista']].map(([href, label]) => <Button key={href} variant="ghost" asChild className="justify-start text-ink-foreground"><a href={href} onClick={() => setMenuOpen(false)}>{label}</a></Button>)}
-        </nav>
+        </nav>}
         <div className="relative pt-16 sm:pt-28">
           <img src={mars} alt="Planeta Marte" width={1024} height={1024} className="pointer-events-none absolute mix-blend-lighten right-[5%] top-10 w-[55%] max-w-[560px] opacity-90 lg:right-[15%]" />
           <div className="relative">
