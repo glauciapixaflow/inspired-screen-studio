@@ -1,6 +1,6 @@
 # Tasks
-- [ ] Add interior tours for the mega library, Lazer Orbital and Arena Solaris.
-- [ ] Verify entry, interior stops and return to the preserved neighborhood.
+- [x] Add interior tours for the mega library, Lazer Orbital and Arena Solaris.
+- [x] Verify entry, interior stops and return to the preserved neighborhood.
 - [x] Improve home layout across phone/tablet widths and add featured-lot map interactions.
 - [x] Verify featured-lot navigation, favorites and mobile layout.
 - [x] Contextualize printing on the exact parcel using the shared subdivision surroundings and faster animation.
