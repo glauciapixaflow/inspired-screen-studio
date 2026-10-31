@@ -4,7 +4,9 @@ import * as THREE from "three";
 import { sceneColor } from "@/components/FuturisticHouse";
 import type { CivicInterior } from "@/lib/interior-tours";
 
-function Archive({ colors }: { colors: Record<string, THREE.Color> }) {
+type InteriorColors = Record<"shell" | "glass" | "gold" | "garden" | "water" | "metal" | "light" | "sky", THREE.Color>;
+
+function Archive({ colors }: { colors: InteriorColors }) {
   const books = useRef<THREE.InstancedMesh | null>(null);
   useLayoutEffect(() => {
     const mesh = books.current; if (!mesh) return;
@@ -35,7 +37,7 @@ function Archive({ colors }: { colors: Record<string, THREE.Color> }) {
 }
 
 export default function CivicInteriorScene({ interior }: { interior: CivicInterior }) {
-  const colors = useMemo(() => Object.fromEntries(Object.entries({ shell: "--civic-shell", glass: "--civic-glass", gold: "--civic-gold", garden: "--civic-garden", water: "--civic-water", metal: "--printer-metal", light: "--walkway-light", sky: "--terrain-ridge" }).map(([key, token]) => [key, sceneColor(token)])), []);
+  const colors = useMemo<InteriorColors>(() => ({ shell: sceneColor("--civic-shell"), glass: sceneColor("--civic-glass"), gold: sceneColor("--civic-gold"), garden: sceneColor("--civic-garden"), water: sceneColor("--civic-water"), metal: sceneColor("--printer-metal"), light: sceneColor("--walkway-light"), sky: sceneColor("--terrain-ridge") }), []);
   const floor = useMemo(() => {
     const canvas = document.createElement("canvas"); canvas.width = canvas.height = 256;
     const ctx = canvas.getContext("2d");
