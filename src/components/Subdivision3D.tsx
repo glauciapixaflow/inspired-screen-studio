@@ -10,6 +10,8 @@ import { SUBDIVISION_PARCELS } from "@/lib/subdivision";
 import { CIVIC_DESTINATIONS, NEIGHBORING_SUBDIVISIONS, type NeighborhoodDestination } from "@/lib/neighborhood";
 
 import SubdivisionEnvironment from "@/components/SubdivisionEnvironment";
+import CivicInteriorTour from "@/components/CivicInteriorTour";
+import { INTERIOR_TOURS, type CivicInterior } from "@/lib/interior-tours";
 
 type View = NeighborhoodDestination;
 
@@ -42,8 +44,11 @@ function Neighborhood({ site, homes, view, selected, onSelect, onReady }: {
 export default function Subdivision3D({ site, homes, onBack }: { site: ConstructionSite; homes: ConstructionSite[]; onBack: () => void }) {
   const [view, setView] = useState<View>("overview");
   const [selected, setSelected] = useState(site.parcel);
+  const [interior, setInterior] = useState<CivicInterior | null>(null);
   const wrapper = useRef<HTMLElement | null>(null);
   const built = homes.some(home => home.region === site.region && home.parcel === selected);
+  const civicView = view === "library" || view === "leisure" || view === "sports" ? view : null;
+  if (interior) return <CivicInteriorTour interior={interior} onBack={() => setInterior(null)} />;
   return <section ref={wrapper} className="absolute inset-0 z-40 bg-construction-surface text-construction-text" aria-label="Mapa 3D do loteamento">
     <Canvas shadows frameloop="demand" camera={{ position: [42, 53, 51], fov: 45 }}><Neighborhood site={site} homes={homes} view={view} selected={selected} onSelect={setSelected} onReady={() => wrapper.current?.setAttribute("data-subdivision-ready", "true")} /></Canvas>
     <header className="pointer-events-none absolute inset-x-0 top-0 flex flex-wrap items-start justify-between gap-3 p-4 sm:p-6">
@@ -56,6 +61,7 @@ export default function Subdivision3D({ site, homes, onBack }: { site: Construct
       <Button size="sm" variant={view === "library" ? "default" : "secondary"} onClick={() => setView("library")}><BookOpen /> Megabiblioteca</Button>
       <Button size="sm" variant={view === "leisure" ? "default" : "secondary"} onClick={() => setView("leisure")}><Sparkles /> Lazer Orbital</Button>
       <Button size="sm" variant={view === "sports" ? "default" : "secondary"} onClick={() => setView("sports")}><Trophy /> Arena Solaris</Button>
+      {civicView && <Button size="sm" onClick={() => setInterior(civicView)}><ArrowLeft className="rotate-180" /> Entrar · {INTERIOR_TOURS[civicView].name}</Button>}
     </nav>
     <footer className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-3 border-t border-construction-text/20 bg-construction-surface/95 p-4 sm:p-6">
       <div className="text-sm"><p className="font-semibold">Parcela {selected} · {built ? "Casa concluída" : "Sem construção"}</p><p className="mt-1 text-xs text-construction-text/65">Loteamento ilustrativo · Reserva não salva</p></div>
