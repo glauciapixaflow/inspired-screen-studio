@@ -1,4 +1,6 @@
 # Tasks
+- [ ] Audit the technologies actively used by each project feature.
+- [ ] Create and visually verify the explanatory PDF technology report.
 - [x] Add interior tours for the mega library, Lazer Orbital and Arena Solaris.
 - [x] Verify entry, interior stops and return to the preserved neighborhood.
 - [x] Improve home layout across phone/tablet widths and add featured-lot map interactions.
