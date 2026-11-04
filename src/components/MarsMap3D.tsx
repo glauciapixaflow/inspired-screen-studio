@@ -6,6 +6,7 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import FuturisticHouse from "@/components/FuturisticHouse";
 import HousePrinter3D from "@/components/HousePrinter3D";
 import Subdivision3D from "@/components/Subdivision3D";
+import { ReservationPanel } from "@/components/ReservationPanel";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LOTES, type Lote } from "@/lib/mars-regions";
@@ -202,7 +203,7 @@ export default function MarsMap3D({ initialRegion }: { initialRegion?: string | 
       )}
 
       {picked && (
-        <div className={`absolute right-4 w-64 bg-background p-4 text-foreground sm:right-6 sm:top-6 sm:w-72 sm:p-6 ${completedHomes.some(home => home.region === picked.nome && home.parcel === plot) ? "bottom-20 sm:bottom-auto" : "top-32"}`}>
+        <div className={`absolute right-4 max-h-[calc(100dvh-10rem)] overflow-y-auto w-64 bg-background p-4 text-foreground sm:right-6 sm:top-6 sm:w-72 sm:p-6 ${completedHomes.some(home => home.region === picked.nome && home.parcel === plot) ? "bottom-20 sm:bottom-auto" : "top-32"}`}>
           <p className="eyebrow text-muted-foreground">Região {picked.id}</p>
           <h3 className="mt-3 text-2xl">{picked.nome}</h3>
           <p className="mt-2 text-sm text-muted-foreground">{picked.preco ? <>A partir de <b className="text-foreground">{picked.preco}</b></> : "Valor a definir"}</p>
@@ -211,7 +212,8 @@ export default function MarsMap3D({ initialRegion }: { initialRegion?: string | 
               <p className="eyebrow text-muted-foreground">Parcela escolhida</p>
               <p className="mt-2 text-xl">{picked.nome} · {plot}</p>
               <p className="text-sm text-muted-foreground">2.400 m²</p>
-              <Button onClick={() => setConstruction(reserveConstructionSite(picked.nome, plot))} className="mt-4 h-auto w-full py-3 font-semibold">{completedHomes.some(home => home.region === picked.nome && home.parcel === plot) ? "Ver minha casa" : "Reservar esta parcela"}</Button>
+              <ReservationPanel key={`${picked.id}-${plot}`} regionId={picked.id} parcelId={plot} />
+              <Button variant="outline" onClick={() => setConstruction(reserveConstructionSite(picked.nome, plot))} className="mt-4 h-auto w-full py-3 font-semibold">{completedHomes.some(home => home.region === picked.nome && home.parcel === plot) ? "Ver simulação da minha casa" : "Simular construção 3D"}</Button>
               {completedHomes.some(home => home.region === picked.nome && home.parcel === plot) && <><p className="mt-2 text-sm font-semibold text-primary">Casa concluída no lote</p><Button variant="secondary" className="mt-2 w-full" onClick={() => setSubdivision(reserveConstructionSite(picked.nome, plot))}>Ver loteamento 3D</Button></>}
             </div>
           ) : (

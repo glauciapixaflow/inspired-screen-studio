@@ -10,6 +10,8 @@ import l4 from "@/assets/lote4.jpg";
 import l5 from "@/assets/lote5.jpg";
 import l6 from "@/assets/lote6.jpg";
 import { Button } from "@/components/ui/button";
+import { MyReservations } from "@/components/MyReservations";
+import { AccountAction } from "@/components/AccountAction";
 import { featuredOffer } from "@/lib/featured-pricing";
 
 export const Route = createFileRoute("/inicio")({
@@ -37,8 +39,8 @@ const lotes = [
 
 const passos = [
   ["Explore", "Compare regiões, topografias e os lotes disponíveis."],
-  ["Reserve", "Garanta sua prioridade com uma reserva digital segura."],
-  ["Conquiste", "Receba seu registro territorial e o dossiê completo."],
+  ["Reserve", "Registre seu interesse na área e acompanhe sua solicitação."],
+  ["Negocie", "Entre em contato com os colaboradores para conversar sobre a área."],
 ];
 
 function Eyebrow({ children, line = "bg-current" }: { children: React.ReactNode; line?: string }) {
@@ -59,12 +61,13 @@ function Index() {
             <a href="#como">Como funciona</a>
             <a href="#mapa">Mapa de Marte</a>
             <a href="#contato" className="border border-ink-foreground/40 px-6 py-4 text-sm font-semibold transition hover:bg-ink-foreground hover:text-ink">Falar com especialista</a>
-            <Link to="/" className="border-l border-ink-foreground/20 pl-6 text-sm opacity-80">Sair</Link>
+            <a href="#minhas-reservas" className="border-l border-ink-foreground/20 pl-6 text-sm opacity-80">Minhas reservas</a>
           </nav>
-          <Button variant="ghost" size="icon" className="size-11 text-ink-foreground lg:hidden" aria-label={menuOpen ? "Fechar menu" : "Abrir menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</Button>
+          <AccountAction />
+              <Button variant="ghost" size="icon" className="size-11 text-ink-foreground lg:hidden" aria-label={menuOpen ? "Fechar menu" : "Abrir menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</Button>
         </header>
         {menuOpen && <nav className="grid grid-cols-2 gap-2 border-b border-ink-foreground/15 py-4 lg:hidden" aria-label="Menu principal">
-          {[['#lotes', 'Lotes'], ['#como', 'Como funciona'], ['#mapa', 'Mapa de Marte'], ['#contato', 'Especialista']].map(([href, label]) => <Button key={href} variant="ghost" asChild className="justify-start text-ink-foreground"><a href={href} onClick={() => setMenuOpen(false)}>{label}</a></Button>)}
+          {[['#lotes', 'Lotes'], ['#como', 'Como funciona'], ['#mapa', 'Mapa de Marte'], ['#contato', 'Especialista'], ['#minhas-reservas', 'Minhas reservas']].map(([href, label]) => <Button key={href} variant="ghost" asChild className="justify-start text-ink-foreground"><a href={href} onClick={() => setMenuOpen(false)}>{label}</a></Button>)}
         </nav>}
         <div className="relative pt-16 sm:pt-28">
           <img src={mars} alt="Planeta Marte" width={1024} height={1024} className="pointer-events-none absolute mix-blend-lighten right-[5%] top-10 w-[55%] max-w-[560px] opacity-90 lg:right-[15%]" />
@@ -112,6 +115,7 @@ function Index() {
         </div>
       </section>
 
+      <MyReservations />
       {/* Mapa */}
       <section id="mapa" className="relative overflow-hidden bg-ink px-6 py-32 text-ink-foreground lg:px-10">
         <div className="pointer-events-none absolute -right-40 top-1/2 hidden aspect-square w-[60%] -translate-y-1/2 lg:block">
@@ -133,7 +137,7 @@ function Index() {
       {/* Como funciona */}
       <section id="como" className="grid gap-16 px-6 py-32 lg:grid-cols-[1fr_1.3fr] lg:px-10">
         <div>
-          <Eyebrow line="bg-primary"><span className="text-muted-foreground">Jornada de compra</span></Eyebrow>
+          <Eyebrow line="bg-primary"><span className="text-muted-foreground">Jornada de negociação</span></Eyebrow>
           <h2 className="font-display mt-10 text-5xl md:text-7xl">Da Terra para Marte, sem complicação.</h2>
         </div>
         <div className="grid border-t border-border sm:grid-cols-3">

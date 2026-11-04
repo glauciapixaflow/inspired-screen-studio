@@ -64,7 +64,7 @@ export default function Subdivision3D({ site, homes, onBack }: { site: Construct
       {civicView && <Button size="sm" onClick={() => setInterior(civicView)}><ArrowLeft className="rotate-180" /> Entrar · {INTERIOR_TOURS[civicView].name}</Button>}
     </nav>
     <footer className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-3 border-t border-construction-text/20 bg-construction-surface/95 p-4 sm:p-6">
-      <div className="text-sm"><p className="font-semibold">Parcela {selected} · {built ? "Casa concluída" : "Sem construção"}</p><p className="mt-1 text-xs text-construction-text/65">Loteamento ilustrativo · Reserva não salva</p></div>
+      <div className="text-sm"><p className="font-semibold">Parcela {selected} · {built ? "Casa concluída" : "Sem construção"}</p><p className="mt-1 text-xs text-construction-text/65">Loteamento ilustrativo · Construção não salva</p></div>
       <div className="flex flex-wrap gap-2" aria-label="Vistas do loteamento">
         <Button variant={view === "overview" ? "default" : "secondary"} onClick={() => setView("overview")}><Orbit /> Geral</Button>
         <Button variant={view === "home" ? "default" : "secondary"} onClick={() => { setSelected(site.parcel); setView("home"); }}><Focus /> Minha casa</Button>
