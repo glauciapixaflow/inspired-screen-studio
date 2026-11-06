@@ -10,12 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AtendimentoRouteImport } from './routes/atendimento'
 import { Route as InicioRouteImport } from './routes/inicio'
 import { Route as MapaRouteImport } from './routes/mapa'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AtendimentoRoute = AtendimentoRouteImport.update({
+  id: '/atendimento',
+  path: '/atendimento',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InicioRoute = InicioRouteImport.update({
@@ -31,30 +43,38 @@ const MapaRoute = MapaRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/atendimento': typeof AtendimentoRoute
   '/inicio': typeof InicioRoute
   '/mapa': typeof MapaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/atendimento': typeof AtendimentoRoute
   '/inicio': typeof InicioRoute
   '/mapa': typeof MapaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/atendimento': typeof AtendimentoRoute
   '/inicio': typeof InicioRoute
   '/mapa': typeof MapaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/inicio' | '/mapa'
+  fullPaths: '/' | '/admin' | '/atendimento' | '/inicio' | '/mapa'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/inicio' | '/mapa'
-  id: '__root__' | '/' | '/inicio' | '/mapa'
+  to: '/' | '/admin' | '/atendimento' | '/inicio' | '/mapa'
+  id: '__root__' | '/' | '/admin' | '/atendimento' | '/inicio' | '/mapa'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  AtendimentoRoute: typeof AtendimentoRoute
   InicioRoute: typeof InicioRoute
   MapaRoute: typeof MapaRoute
 }
@@ -66,6 +86,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/atendimento': {
+      id: '/atendimento'
+      path: '/atendimento'
+      fullPath: '/atendimento'
+      preLoaderRoute: typeof AtendimentoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inicio': {
@@ -87,6 +121,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  AtendimentoRoute: AtendimentoRoute,
   InicioRoute: InicioRoute,
   MapaRoute: MapaRoute,
 }

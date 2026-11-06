@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 const { getUser, from } = vi.hoisted(() => ({ getUser: vi.fn(), from: vi.fn() }));
 vi.mock("@/lib/supabase", () => ({ supabase: { auth: { getUser }, from } }));
 import { listReservations, reserveArea } from "@/lib/reservations";
@@ -55,7 +55,7 @@ describe("Area reservation persistence", () => {
     from.mockReturnValueOnce(duplicate).mockReturnValueOnce(own);
     await expect(reserveArea("08", "A1")).resolves.toEqual(reservation);
     expect(own.eq).toHaveBeenCalledWith("user_id", "user-a");
-    expect(own.in).toHaveBeenCalledWith("status", ["pending_contact", "contacted"]);
+    expect(own.in).toHaveBeenCalledWith("status", ["pending_contact", "contacted", "confirmed"]);
   });
   it("reports another user's reserved parcel without leaking their record", async () => {
     from

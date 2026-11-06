@@ -145,3 +145,38 @@ describe("Reservation deadline UI", () => {
     expect(screen.getByRole("button", { name: "Solicitar reserva desta área" })).toBeEnabled();
   });
 });
+
+describe("Cancellation eligibility", () => {
+  it.each(["pending_contact", "contacted"])(
+    "offers cancellation before conclusion: %s",
+    (status) => {
+      useReservationsMock.mockReturnValue({
+        user: { id: "user-a" },
+        loading: false,
+        error: false,
+        query: {
+          data: [{ ...row, status, contacted_at: status === "contacted" ? row.created_at : null }],
+          isPending: false,
+          isError: false,
+        },
+      });
+      show(<MyReservations />);
+      expect(screen.getByRole("button", { name: "Cancelar minha reserva" })).toBeEnabled();
+    },
+  );
+  it.each(["confirmed", "cancelled", "expired", "deactivated"])(
+    "does not offer cancellation on a closed reservation: %s",
+    (status) => {
+      useReservationsMock.mockReturnValue({
+        user: { id: "user-a" },
+        loading: false,
+        error: false,
+        query: { data: [{ ...row, status }], isPending: false, isError: false },
+      });
+      show(<MyReservations />);
+      expect(
+        screen.queryByRole("button", { name: "Cancelar minha reserva" }),
+      ).not.toBeInTheDocument();
+    },
+  );
+});

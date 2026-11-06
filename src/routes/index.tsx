@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { ClientSignupForm } from "@/components/ClientSignupForm";
 import mars from "@/assets/mars.jpg";
 
 export const Route = createFileRoute("/")({
@@ -22,6 +23,11 @@ export const Route = createFileRoute("/")({
 });
 
 function Login() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    setReady(true);
+  }, []);
+  const [register, setRegister] = useState(false);
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -94,88 +100,104 @@ function Login() {
           <span>PORTAL DO INVESTIDOR</span>
           <span>2035 · BR</span>
         </div>
-        <form onSubmit={go} className="mx-auto my-auto w-full max-w-md py-12">
-          <p className="eyebrow flex items-center gap-4">
-            <span className="h-px w-10 bg-foreground" />
-            Bem-vindo de volta
-          </p>
-          <h2 className="font-display mt-8 text-6xl">Acesse sua conta</h2>
-          <p className="mt-6 text-muted-foreground">
-            Entre para continuar explorando seu próximo território.
-          </p>
+        {register ? (
+          <ClientSignupForm onLogin={() => setRegister(false)} />
+        ) : (
+          <form method="post" onSubmit={go} className="mx-auto my-auto w-full max-w-md py-12">
+            <p className="eyebrow flex items-center gap-4">
+              <span className="h-px w-10 bg-foreground" />
+              Bem-vindo de volta
+            </p>
+            <h2 className="font-display mt-8 text-6xl">Acesse sua conta</h2>
+            <p className="mt-6 text-muted-foreground">
+              Entre para continuar explorando seu próximo território.
+            </p>
 
-          <label htmlFor="login-email" className="eyebrow mt-12 block text-[0.65rem]">
-            E-mail
-          </label>
-          <input
-            id="login-email"
-            name="email"
-            autoComplete="username"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={loading}
-            type="email"
-            placeholder="seuemail@exemplo.com"
-            className="w-full border-b border-input bg-transparent py-4 text-lg outline-none focus:border-primary"
-          />
-          <label htmlFor="login-password" className="eyebrow mt-8 block text-[0.65rem]">
-            Senha
-          </label>
-          <div className="flex items-center border-b border-input focus-within:border-primary">
+            <label htmlFor="login-email" className="eyebrow mt-12 block text-[0.65rem]">
+              E-mail
+            </label>
             <input
-              id="login-password"
-              name="password"
-              autoComplete="current-password"
+              id="login-email"
+              name="email"
+              autoComplete="username"
               required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
-              type={show ? "text" : "password"}
-              placeholder="Mínimo de 6 caracteres"
-              className="w-full bg-transparent py-4 text-lg outline-none"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={!ready || loading}
+              type="email"
+              placeholder="seuemail@exemplo.com"
+              className="w-full border-b border-input bg-transparent py-4 text-lg outline-none focus:border-primary"
             />
+            <label htmlFor="login-password" className="eyebrow mt-8 block text-[0.65rem]">
+              Senha
+            </label>
+            <div className="flex items-center border-b border-input focus-within:border-primary">
+              <input
+                id="login-password"
+                name="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={!ready || loading}
+                type={show ? "text" : "password"}
+                placeholder="Mínimo de 6 caracteres"
+                className="w-full bg-transparent py-4 text-lg outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShow(!show)}
+                className="text-sm font-semibold text-primary"
+              >
+                {show ? "Ocultar" : "Mostrar"}
+              </button>
+            </div>
+            <div className="mt-8 flex items-center justify-between text-sm">
+              <label className="flex items-center gap-2">
+                <input type="checkbox" defaultChecked className="accent-primary" /> Lembrar de mim
+              </label>
+              <a href="#" className="text-primary">
+                Esqueci minha senha
+              </a>
+            </div>
+            {errorMessage && (
+              <p role="alert" className="mt-6 text-sm text-destructive">
+                {errorMessage}
+              </p>
+            )}
+            <button
+              type="submit"
+              disabled={!ready || loading}
+              aria-busy={loading}
+              className="disabled:cursor-wait disabled:opacity-60 mt-10 flex w-full items-center justify-center gap-4 bg-primary py-6 font-semibold text-primary-foreground transition hover:bg-rust"
+            >
+              {loading ? "Entrando..." : "Entrar na minha conta"} <ArrowRight size={18} />
+            </button>
             <button
               type="button"
-              onClick={() => setShow(!show)}
-              className="text-sm font-semibold text-primary"
+              disabled={!ready || loading}
+              onClick={() => {
+                setPassword("");
+                setErrorMessage("");
+                setRegister(true);
+              }}
+              className="mt-6 w-full py-3 text-center font-semibold text-primary underline underline-offset-4"
             >
-              {show ? "Ocultar" : "Mostrar"}
+              Ainda não tem conta? Criar conta
             </button>
-          </div>
-          <div className="mt-8 flex items-center justify-between text-sm">
-            <label className="flex items-center gap-2">
-              <input type="checkbox" defaultChecked className="accent-primary" /> Lembrar de mim
-            </label>
-            <a href="#" className="text-primary">
-              Esqueci minha senha
-            </a>
-          </div>
-          {errorMessage && (
-            <p role="alert" className="mt-6 text-sm text-destructive">
-              {errorMessage}
-            </p>
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            aria-busy={loading}
-            className="disabled:cursor-wait disabled:opacity-60 mt-10 flex w-full items-center justify-center gap-4 bg-primary py-6 font-semibold text-primary-foreground transition hover:bg-rust"
-          >
-            {loading ? "Entrando..." : "Entrar na minha conta"} <ArrowRight size={18} />
-          </button>
-          <div className="my-8 flex items-center gap-4 text-xs tracking-[0.15em] text-muted-foreground">
-            <span className="h-px flex-1 bg-border" />
-            OU ACESSE PARA CONHECER
-            <span className="h-px flex-1 bg-border" />
-          </div>
-          <Link
-            to="/inicio"
-            className="block border border-foreground/40 py-5 text-center font-semibold transition hover:bg-foreground hover:text-background"
-          >
-            Entrar como visitante
-          </Link>
-        </form>
+            <div className="my-8 flex items-center gap-4 text-xs tracking-[0.15em] text-muted-foreground">
+              <span className="h-px flex-1 bg-border" />
+              OU ACESSE PARA CONHECER
+              <span className="h-px flex-1 bg-border" />
+            </div>
+            <Link
+              to="/inicio"
+              className="block border border-foreground/40 py-5 text-center font-semibold transition hover:bg-foreground hover:text-background"
+            >
+              Entrar como visitante
+            </Link>
+          </form>
+        )}
       </section>
     </div>
   );

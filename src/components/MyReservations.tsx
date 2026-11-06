@@ -1,13 +1,24 @@
+import { CancelReservationButton } from "@/components/CancelReservationButton";
 import { Link } from "@tanstack/react-router";
 import { useReservations } from "@/hooks/use-reservations";
 import { useReservationClock } from "@/hooks/use-reservation-clock";
-import { formatDeadline, reservationStatus } from "@/lib/reservations";
+import {
+  formatDeadline,
+  negotiationDeadline,
+  reservationStatus,
+  isReservationActive,
+} from "@/lib/reservations";
 import { LOTES } from "@/lib/mars-regions";
 import { Button } from "@/components/ui/button";
 
 export function MyReservations() {
   const { user, loading, error, query } = useReservations();
-  const now = useReservationClock((query.data ?? []).map((row) => row.expires_at));
+  const now = useReservationClock(
+    (query.data ?? []).flatMap((row) => [
+      row.expires_at,
+      ...(negotiationDeadline(row) ? [negotiationDeadline(row)!] : []),
+    ]),
+  );
   return (
     <section
       id="minhas-reservas"
@@ -69,7 +80,7 @@ export function MyReservations() {
               <p className="text-sm font-semibold text-primary">
                 {reservationStatus(reservation, now)}
               </p>
-              {reservation.status !== "contacted" && (
+              {(reservation.status === "pending_contact" || reservation.status === "expired") && (
                 <p className="text-sm">
                   Prazo para contato: {formatDeadline(reservation.expires_at)} (Brasília). Sem
                   contato confirmado em cinco dias, a parcela é liberada.
@@ -89,6 +100,40 @@ export function MyReservations() {
               <p className="break-all text-sm">
                 Protocolo: <span className="font-mono">{reservation.id}</span>
               </p>
+              {reservation.status === "contacted" && negotiationDeadline(reservation) && (
+                <p className="text-sm">
+                  Prazo de negociação: {formatDeadline(negotiationDeadline(reservation)!)}{" "}
+                  (Brasília). Sem conclusão da equipe em 15 dias, a reserva é desativada.
+                </p>
+              )}
+              {reservation.status === "cancelled" && (
+                <p role="status" className="text-sm">
+                  Cancelamento registrado
+                  {reservation.resolved_at
+                    ? ` em ${formatDeadline(reservation.resolved_at)} (Brasília)`
+                    : ""}
+                  . A área foi liberada para novas reservas.
+                </p>
+              )}
+              {reservation.status === "confirmed" && (
+                <p className="text-sm">
+                  Negociação concluída pela equipe. A área permanece indisponível para novas
+                  reservas.
+                </p>
+              )}
+              {reservationStatus(reservation, now) === "Reserva desativada" && (
+                <p className="text-sm">
+                  Esta reserva foi desativada. Você pode solicitar novamente se a área estiver
+                  disponível.
+                </p>
+              )}
+              {(reservation.status === "pending_contact" || reservation.status === "contacted") &&
+                isReservationActive(reservation, now) && (
+                  <CancelReservationButton
+                    key={`${reservation.id}-${reservation.status}`}
+                    reservation={reservation}
+                  />
+                )}
               <p className="text-sm text-muted-foreground">
                 Informe este protocolo ao conversar com a equipe sobre a área.
               </p>

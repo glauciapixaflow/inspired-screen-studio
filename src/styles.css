@@ -55,6 +55,8 @@
   --color-ink-foreground: var(--ink-foreground);
   --color-lime: var(--lime);
   --color-lime-foreground: var(--lime-foreground);
+  --color-map-reserved: var(--map-reserved);
+  --color-map-confirmed: var(--map-confirmed);
   --color-rust: var(--rust);
   --color-construction-surface: var(--construction-surface);
   --color-construction-text: var(--construction-text);
@@ -72,6 +74,10 @@
 }
 
 :root {
+  --map-reserved: oklch(0.66 0.19 35);
+  --map-confirmed: oklch(0.82 0.16 80);
+  --map-free: oklch(0.94 0.025 75);
+  --map-selected: oklch(0.88 0.19 120);
   --radius: 0rem;
   --background: oklch(0.96 0.012 75);
   --foreground: oklch(0.17 0.01 40);
@@ -178,6 +184,19 @@
   }
 }
 
-@utility font-display { font-family: var(--font-display); letter-spacing: -0.055em; line-height: 0.95; }
-@utility font-serif-i { font-family: var(--font-serif); font-style: italic; letter-spacing: -0.02em; }
-@utility eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; }
+@utility font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.055em;
+  line-height: 0.95;
+}
+@utility font-serif-i {
+  font-family: var(--font-serif);
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
+@utility eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}

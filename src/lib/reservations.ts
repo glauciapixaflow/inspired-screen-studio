@@ -5,26 +5,41 @@ export type AreaReservation = {
   user_id: string;
   region_id: string;
   parcel_id: string;
-  status: "pending_contact" | "contacted" | "expired";
+  status: "pending_contact" | "contacted" | "confirmed" | "deactivated" | "expired" | "cancelled";
   created_at: string;
   expires_at: string;
   contacted_at: string | null;
+  negotiation_expires_at?: string | null;
+  resolved_at?: string | null;
 };
 
-const columns = "id,user_id,region_id,parcel_id,status,created_at,expires_at,contacted_at";
+const columns =
+  "id,user_id,region_id,parcel_id,status,created_at,expires_at,contacted_at,negotiation_expires_at,resolved_at";
+
+export function negotiationDeadline(reservation: AreaReservation): string | null {
+  if (reservation.negotiation_expires_at) return reservation.negotiation_expires_at;
+  return reservation.contacted_at
+    ? new Date(Date.parse(reservation.contacted_at) + 360 * 60 * 60 * 1000).toISOString()
+    : null;
+}
 
 export function isReservationActive(reservation: AreaReservation, now = Date.now()): boolean {
-  return (
-    reservation.status === "contacted" ||
-    (reservation.status === "pending_contact" && new Date(reservation.expires_at).getTime() > now)
-  );
+  if (reservation.status === "confirmed") return true;
+  if (reservation.status === "contacted") {
+    const deadline = negotiationDeadline(reservation);
+    return !!deadline && Date.parse(deadline) > now;
+  }
+  return reservation.status === "pending_contact" && Date.parse(reservation.expires_at) > now;
 }
 
 export function reservationStatus(reservation: AreaReservation, now = Date.now()): string {
-  if (reservation.status === "contacted") return "Contato confirmado";
+  if (reservation.status === "confirmed") return "Reserva confirmada";
+  if (reservation.status === "deactivated") return "Reserva desativada";
+  if (reservation.status === "cancelled") return "Reserva cancelada";
+  if (reservation.status === "contacted")
+    return isReservationActive(reservation, now) ? "Contato confirmado" : "Reserva desativada";
   return isReservationActive(reservation, now) ? "Aguardando contato" : "Reserva expirada";
 }
-
 export function formatDeadline(value: string): string {
   return new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
@@ -73,7 +88,7 @@ export async function reserveArea(regionId: string, parcelId: string): Promise<A
       .eq("user_id", auth.user.id)
       .eq("region_id", regionId)
       .eq("parcel_id", parcelId)
-      .in("status", ["pending_contact", "contacted"])
+      .in("status", ["pending_contact", "contacted", "confirmed"])
       .maybeSingle<AreaReservation>();
     if (lookupError) throw new Error("Não foi possível verificar a reserva. Tente novamente.");
     if (existing) return existing;

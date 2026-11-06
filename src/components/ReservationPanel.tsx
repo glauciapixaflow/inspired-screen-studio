@@ -1,3 +1,4 @@
+import type { ParcelAvailability } from "@/lib/parcel-availability";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -8,9 +9,22 @@ import {
   isReservationActive,
   reservationStatus,
   reserveArea,
+  negotiationDeadline,
 } from "@/lib/reservations";
 
-export function ReservationPanel({ regionId, parcelId }: { regionId: string; parcelId: string }) {
+export function ReservationPanel({
+  regionId,
+  parcelId,
+  occupied,
+  availabilityPending = false,
+  availabilityError = false,
+}: {
+  regionId: string;
+  parcelId: string;
+  occupied?: ParcelAvailability | undefined;
+  availabilityPending?: boolean;
+  availabilityError?: boolean;
+}) {
   const { user, loading, error, query } = useReservations();
   const cache = useQueryClient();
   const mutation = useMutation({
@@ -21,15 +35,28 @@ export function ReservationPanel({ regionId, parcelId }: { regionId: string; par
     },
   });
   const now = useReservationClock(
-    (query.data ?? []).map((row) => row.expires_at).concat(mutation.data?.expires_at ?? []),
+    (query.data ?? [])
+      .flatMap((row) => [
+        row.expires_at,
+        ...(negotiationDeadline(row) ? [negotiationDeadline(row)!] : []),
+      ])
+      .concat(
+        mutation.data
+          ? [
+              mutation.data.expires_at,
+              ...(negotiationDeadline(mutation.data) ? [negotiationDeadline(mutation.data)!] : []),
+            ]
+          : [],
+      ),
   );
+  const latestMutation = query.data?.find((row) => row.id === mutation.data?.id) ?? mutation.data;
   const saved = user
     ? (query.data?.find(
         (row) =>
           row.region_id === regionId && row.parcel_id === parcelId && isReservationActive(row, now),
       ) ??
-      (mutation.data?.user_id === user.id && isReservationActive(mutation.data, now)
-        ? mutation.data
+      (latestMutation?.user_id === user.id && isReservationActive(latestMutation, now)
+        ? latestMutation
         : undefined))
     : undefined;
 
@@ -60,7 +87,16 @@ export function ReservationPanel({ regionId, parcelId }: { regionId: string; par
       {saved ? (
         <div role="status" className="space-y-2">
           <p className="font-semibold text-primary">Solicitação de reserva salva</p>
-          <p>{reservationStatus(saved, now)} · sujeita à confirmação da equipe.</p>
+          <p>
+            {reservationStatus(saved, now)}
+            {saved.status !== "confirmed" && " · sujeita à conclusão da equipe."}
+          </p>
+          {saved.status === "contacted" && negotiationDeadline(saved) && (
+            <p>
+              Negociação até {formatDeadline(negotiationDeadline(saved)!)} (Brasília). Sem conclusão
+              em 15 dias, a reserva é desativada.
+            </p>
+          )}
           {saved.status === "pending_contact" && (
             <p>
               Entre em contato até{" "}
@@ -78,6 +114,20 @@ export function ReservationPanel({ regionId, parcelId }: { regionId: string; par
         </div>
       ) : (
         <>
+          {occupied ? (
+            <p role="status" className="font-semibold text-primary">
+              {occupied.status === "confirmed"
+                ? "Esta área já foi confirmada e está indisponível."
+                : "Esta área já está reservada por outra conta."}{" "}
+              Escolha outra parcela.
+            </p>
+          ) : availabilityError ? (
+            <p role="alert">
+              Não foi possível verificar a disponibilidade. Atualize o mapa antes de reservar.
+            </p>
+          ) : availabilityPending ? (
+            <p role="status">Consultando disponibilidade...</p>
+          ) : null}
           <p>
             A reserva registra seu interesse para negociação posterior. Não confirma compra nem
             propriedade. Você tem cinco dias corridos (120 horas) para entrar em contato; sem
@@ -90,7 +140,13 @@ export function ReservationPanel({ regionId, parcelId }: { regionId: string; par
           )}
           <Button
             onClick={() => mutation.mutate()}
-            disabled={mutation.isPending || query.isPending}
+            disabled={
+              mutation.isPending ||
+              query.isPending ||
+              !!occupied ||
+              availabilityPending ||
+              availabilityError
+            }
             className="h-auto w-full py-3"
           >
             {mutation.isPending

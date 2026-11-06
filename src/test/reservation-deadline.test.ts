@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import { isReservationActive, reservationStatus, type AreaReservation } from "@/lib/reservations";
 
 const reservation: AreaReservation = {
@@ -30,5 +30,33 @@ describe("Five day reservation deadline", () => {
   });
   it("never treats an explicitly expired reservation as active", () => {
     expect(isReservationActive({ ...reservation, status: "expired" }, deadline - 1000)).toBe(false);
+  });
+});
+
+describe("Fifteen day negotiation", () => {
+  const contacted: AreaReservation = {
+    ...reservation,
+    status: "contacted",
+    contacted_at: "2026-11-05T12:00:00Z",
+    negotiation_expires_at: "2026-11-20T12:00:00Z",
+  };
+  const cutoff = Date.parse(contacted.negotiation_expires_at!);
+  it("deactivates exactly at 360 hours after contact, rather than at the first-contact deadline", () => {
+    expect(isReservationActive(contacted, cutoff - 1)).toBe(true);
+    expect(isReservationActive(contacted, cutoff)).toBe(false);
+    expect(reservationStatus(contacted, cutoff)).toBe("Reserva desativada");
+  });
+  it("keeps definitively confirmed areas unavailable after any deadline", () => {
+    expect(isReservationActive({ ...contacted, status: "confirmed" }, cutoff + 100000000)).toBe(
+      true,
+    );
+    expect(reservationStatus({ ...contacted, status: "confirmed" }, cutoff + 100000000)).toBe(
+      "Reserva confirmada",
+    );
+  });
+  it("does not keep a manually deactivated reservation active", () => {
+    expect(isReservationActive({ ...contacted, status: "deactivated" }, cutoff - 100000)).toBe(
+      false,
+    );
   });
 });
