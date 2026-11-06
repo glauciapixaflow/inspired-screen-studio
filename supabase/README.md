@@ -137,3 +137,17 @@ A RPC `cancel_my_reservation(p_reservation_id)` identifica o proprietário por a
 O estado cancelled libera o índice da parcela e sai da consulta do mapa. A interface atualiza o histórico e invalida as consultas de disponibilidade após a resposta do servidor. Outras contas veem a atualização ao voltar ao mapa ou na próxima consulta de 15 segundos. Atendimento inclui o filtro Reserva cancelada e identifica o cancelamento pelo cliente. Casas simuladas continuam independentes do cadastro de reservas. Não há envio de e-mail nesta operação.
 
 Testes: `tests/client_cancellation.sql` em transação reversível, testes de API e confirmação em `src/test/reservation-cancellation.test.ts` e `src/test/reservation-cancellation-ui.test.tsx`, e critérios de exibição em `src/test/reservation-ui.test.tsx`.
+
+## Recuperação de senha
+
+A tela de login oferece Esqueci minha senha, que abre `/recuperar-senha`. O pedido chama Supabase Auth resetPasswordForEmail com retorno em `/redefinir-senha`, na mesma origem do site. A mensagem não informa se a conta existe; erros de envio e limites não são apresentados como sucesso. Nenhuma nova migração SQL é necessária.
+
+No Supabase, em Authentication > URL Configuration > Redirect URLs, adicione `http://localhost:8080/redefinir-senha` para testes locais. Ao publicar, adicione também a URL exata `/redefinir-senha` no domínio publicado e confira Site URL. O envio real depende da configuração de e-mail/SMTP e dos limites do projeto. Não é suficiente copiar somente os arquivos para receber mensagens. Preserve o link de confirmação do Supabase se alterar o modelo do e-mail.
+
+O fluxo usa o formato implícito do cliente atual: o Supabase verifica o link enviado e retorna tokens com type=recovery no fragmento da URL. A tela captura o fragmento, limpa a barra de endereço e valida a sessão em um cliente isolado, sem armazenamento persistente, sem renovação automática e sem usar a sessão normal do site. Links ausentes, de outro tipo ou rejeitados não abrem o formulário de nova senha. Se a configuração redirecionar para a raiz com type=recovery, a tela de login encaminha para a recuperação. Código PKCE e modelos personalizados com token_hash não fazem parte deste fluxo.
+
+A nova senha e sua confirmação devem coincidir e ter pelo menos oito caracteres. O servidor aplica as demais regras de senha. Antes da alteração, a identidade recuperada é conferida; a chamada updateUser envia apenas a nova senha. Após a resposta válida, a sessão de recuperação é encerrada com escopo local e a pessoa volta ao login para entrar. A sessão normal de outra conta não é substituída por este fluxo. Credenciais não são registradas em arquivos, logs ou tabelas. A sessão é mantida somente em memória; recarregar a página após remover os tokens exige abrir o link novamente ou solicitar outro.
+
+Testes automatizados e no navegador usam respostas simuladas, sem criar usuários nem enviar e-mails reais. Para validar o projeto hospedado, use Esqueci minha senha com uma conta sua, abra o e-mail mais recente e entre com a nova senha depois da alteração.
+
+Referências oficiais: https://supabase.com/docs/guides/auth/passwords e https://supabase.com/docs/reference/javascript/auth-resetpasswordforemail.

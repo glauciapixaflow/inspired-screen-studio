@@ -34,6 +34,13 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const nav = useNavigate();
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    const params = new URLSearchParams(hash);
+    if (params.get("type") === "recovery" || params.get("error_code") === "otp_expired") {
+      void nav({ to: "/redefinir-senha", hash, replace: true });
+    }
+  }, [nav]);
   const go = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (loading) return;
@@ -156,9 +163,9 @@ function Login() {
               <label className="flex items-center gap-2">
                 <input type="checkbox" defaultChecked className="accent-primary" /> Lembrar de mim
               </label>
-              <a href="#" className="text-primary">
+              <Link to="/recuperar-senha" className="text-primary">
                 Esqueci minha senha
-              </a>
+              </Link>
             </div>
             {errorMessage && (
               <p role="alert" className="mt-6 text-sm text-destructive">
