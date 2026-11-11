@@ -31,7 +31,7 @@ Se baixou o ZIP, a pasta normalmente se chama `inspired-screen-studio-main`. Abr
 - Histórico das decisões e permissões verificadas no banco.
 - Simulações 3D de construção e exploração de loteamentos, mantidas no estado local da sessão.
 
-As reservas registram interesse para negociação; a simulação 3D não registra uma compra. Chat, atendimento com IA e avisos automáticos de reserva por e-mail ainda não estão implementados.
+As reservas registram interesse para negociação; a simulação 3D não registra uma compra. O chat por reserva, com IA e encaminhamento humano, está preparado e depende da migração, publicação da função e chave Gemini (Google) descritas em [supabase/CHAT_SETUP.md](supabase/CHAT_SETUP.md). Avisos automáticos de reserva por e-mail ainda não estão implementados.
 
 ## Requisitos
 
@@ -86,6 +86,7 @@ Use a chave pública **publishable**, nunca uma chave `secret` ou `service_role`
 7. `202611050003_negotiation_schedule.sql`
 8. `202611050004_map_availability.sql`
 9. `202611050005_client_cancellation.sql`
+10. `202611090001_reservation_chat.sql`
 
 O agendamento de desativação usa `pg_cron`. A criação do primeiro administrador é uma operação separada do proprietário, descrita em [supabase/README.md](supabase/README.md), usando [supabase/setup/first_admin.sql](supabase/setup/first_admin.sql) após cadastrar a conta escolhida. Novos usuários sempre começam como clientes; um administrador atribui o perfil de colaborador pelo painel.
 
@@ -120,6 +121,7 @@ Abra o endereço informado no terminal, normalmente **http://localhost:8080/**. 
 | `/recuperar-senha` | Solicitar e-mail de recuperação                                          |
 | `/redefinir-senha` | Definir a senha pelo link recebido                                       |
 | `/atendimento`     | Reservas e negociações, para colaboradores e administradores             |
+| `/chat`            | Conversas por reserva, assistente de IA e atendimento humano             |
 | `/admin`           | Pessoas e perfis, exclusivo de administradores, com confirmação de senha |
 
 Abrir `/redefinir-senha` diretamente, sem um link válido de recuperação, mostra uma orientação para solicitar outro e-mail.
@@ -179,3 +181,14 @@ Substitua `CAMINHO_DO_ARQUIVO` pelo arquivo que deseja incluir e repita para out
 ## Desenvolvimento com Lovable
 
 Este projeto foi criado com [Lovable](https://lovable.dev) e está conectado ao [editor do projeto](https://lovable.dev/projects/e25b4b4b-ca45-49cf-ab26-954dbe20c3fc). Alterações enviadas à branch conectada são sincronizadas com o editor. Preserve o histórico publicado: não use force push nem reescreva commits já enviados. Consulte [AGENTS.md](AGENTS.md) para as orientações de desenvolvimento.
+
+Para ativar o chat e a integração com Gemini (Google), siga o [guia do chat](supabase/CHAT_SETUP.md). A chave fica nos Secrets das Edge Functions, nunca nas variáveis públicas do frontend.
+
+### Condições comerciais do assistente
+
+Administradores acessam /condicoes-comerciais pelo menu da conta para cadastrar e revisar preços, entrada, parcelamento, juros e formas de pagamento por região. Apenas condições aprovadas são disponibilizadas à IA. Rascunhos e preços ilustrativos não são usados como propostas.
+
+Aplique [202611090002_commercial_terms.sql](supabase/migrations/202611090002_commercial_terms.sql) depois da migração do chat e publique a versão atualizada da Edge Function. O [guia do chat](supabase/CHAT_SETUP.md) detalha a ativação. A equipe acompanha as conversas em /chat e usa **Interromper IA e assumir** para continuar o atendimento humano.
+### Especialista de Marte
+
+Em /inicio, **Falar com especialista** abre o diálogo com Gemini sobre clima, temperaturas, condições atmosféricas, tempo marciano e relevo, com referências da NASA e indicação de ausência de previsão em tempo real. O usuário precisa entrar na conta e pode conversar sem ter uma reserva. A ativação requer a nova [migração de limite de uso](supabase/migrations/202611090003_mars_specialist.sql) e a publicação dos arquivos atualizados, conforme o [guia](supabase/CHAT_SETUP.md).

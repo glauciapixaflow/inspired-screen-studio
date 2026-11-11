@@ -17,10 +17,13 @@ export function AccountAction() {
       const { supabase } = await import("@/lib/supabase");
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      await cache.cancelQueries({ queryKey: ["reservation-chats"] });
+      cache.removeQueries({ queryKey: ["reservation-chats"] });
       await cache.cancelQueries({ queryKey: ["team-reservations"] });
       cache.removeQueries({ queryKey: ["team-reservations"] });
       await cache.cancelQueries({ queryKey: ["admin-users"] });
       cache.removeQueries({ queryKey: ["admin-users"] });
+      cache.removeQueries({ queryKey: ["commercial-terms"] });
       cache.removeQueries({ queryKey: ["user-role"] });
       cache.removeQueries({ queryKey: ["area-reservations"] });
       await navigate({ to: "/" });
@@ -39,6 +42,9 @@ export function AccountAction() {
     );
   return (
     <span className="flex flex-wrap items-center gap-4 text-sm">
+      <Link to="/chat" className="font-semibold underline underline-offset-4">
+        Conversas
+      </Link>
       {(role === "admin" || role === "collaborator") && (
         <Link to="/atendimento" className="font-semibold underline underline-offset-4">
           Atendimento
@@ -50,6 +56,11 @@ export function AccountAction() {
           className="inline-flex items-center rounded-md border border-current/40 px-3 py-2 font-semibold transition hover:bg-current/10"
         >
           Administração
+        </Link>
+      )}
+      {role === "admin" && (
+        <Link to="/condicoes-comerciais" className="font-semibold underline underline-offset-4">
+          Condições comerciais
         </Link>
       )}
       <button type="button" onClick={signOut} disabled={busy}>

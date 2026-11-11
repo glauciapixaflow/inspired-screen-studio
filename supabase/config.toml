@@ -1,0 +1,5 @@
+project_id = "inspired-screen-studio"
+
+[functions.reservation-assistant]
+# The gateway checks the JWT, and getUser verifies the user again inside the function.
+verify_jwt = true

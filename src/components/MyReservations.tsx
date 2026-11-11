@@ -138,6 +138,13 @@ export function MyReservations() {
                 Informe este protocolo ao conversar com a equipe sobre a área.
               </p>
               <Link
+                to="/chat"
+                search={{ reservation: reservation.id }}
+                className="block font-semibold text-primary underline underline-offset-4"
+              >
+                Conversar sobre esta reserva
+              </Link>
+              <Link
                 to="/mapa"
                 search={{ region: reservation.region_id }}
                 className="inline-block underline"

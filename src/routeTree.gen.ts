@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AtendimentoRouteImport } from './routes/atendimento'
+import { Route as ChatRouteImport } from './routes/chat'
+import { Route as CondicoesComerciaisRouteImport } from './routes/condicoes-comerciais'
 import { Route as InicioRouteImport } from './routes/inicio'
 import { Route as MapaRouteImport } from './routes/mapa'
 import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
@@ -30,6 +32,16 @@ const AdminRoute = AdminRouteImport.update({
 const AtendimentoRoute = AtendimentoRouteImport.update({
   id: '/atendimento',
   path: '/atendimento',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CondicoesComerciaisRoute = CondicoesComerciaisRouteImport.update({
+  id: '/condicoes-comerciais',
+  path: '/condicoes-comerciais',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InicioRoute = InicioRouteImport.update({
@@ -57,6 +69,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/atendimento': typeof AtendimentoRoute
+  '/chat': typeof ChatRoute
+  '/condicoes-comerciais': typeof CondicoesComerciaisRoute
   '/inicio': typeof InicioRoute
   '/mapa': typeof MapaRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
@@ -66,6 +80,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/atendimento': typeof AtendimentoRoute
+  '/chat': typeof ChatRoute
+  '/condicoes-comerciais': typeof CondicoesComerciaisRoute
   '/inicio': typeof InicioRoute
   '/mapa': typeof MapaRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
@@ -76,6 +92,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/atendimento': typeof AtendimentoRoute
+  '/chat': typeof ChatRoute
+  '/condicoes-comerciais': typeof CondicoesComerciaisRoute
   '/inicio': typeof InicioRoute
   '/mapa': typeof MapaRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
@@ -87,6 +105,8 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/atendimento'
+    | '/chat'
+    | '/condicoes-comerciais'
     | '/inicio'
     | '/mapa'
     | '/recuperar-senha'
@@ -96,6 +116,8 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/atendimento'
+    | '/chat'
+    | '/condicoes-comerciais'
     | '/inicio'
     | '/mapa'
     | '/recuperar-senha'
@@ -105,6 +127,8 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/atendimento'
+    | '/chat'
+    | '/condicoes-comerciais'
     | '/inicio'
     | '/mapa'
     | '/recuperar-senha'
@@ -115,6 +139,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   AtendimentoRoute: typeof AtendimentoRoute
+  ChatRoute: typeof ChatRoute
+  CondicoesComerciaisRoute: typeof CondicoesComerciaisRoute
   InicioRoute: typeof InicioRoute
   MapaRoute: typeof MapaRoute
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
@@ -142,6 +168,20 @@ declare module '@tanstack/react-router' {
       path: '/atendimento'
       fullPath: '/atendimento'
       preLoaderRoute: typeof AtendimentoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/condicoes-comerciais': {
+      id: '/condicoes-comerciais'
+      path: '/condicoes-comerciais'
+      fullPath: '/condicoes-comerciais'
+      preLoaderRoute: typeof CondicoesComerciaisRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inicio': {
@@ -179,6 +219,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   AtendimentoRoute: AtendimentoRoute,
+  ChatRoute: ChatRoute,
+  CondicoesComerciaisRoute: CondicoesComerciaisRoute,
   InicioRoute: InicioRoute,
   MapaRoute: MapaRoute,
   RecuperarSenhaRoute: RecuperarSenhaRoute,

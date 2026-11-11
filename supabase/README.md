@@ -76,7 +76,6 @@ A troca de perfil usa a função já existente `set_user_role`, preservando o hi
 
 A tela Pessoas e perfis não cria contas novas. O contato das reservas é confirmado na tela Atendimento. Colaboradores não recebem acesso à lista administrativa de usuários. Testes específicos: `src/test/admin-users.test.tsx` e `supabase/tests/admin_user_list.sql` (transação reversível pelo SQL Editor).
 
-
 Testes de atendimento: src/test/team-reservations.test.ts, src/test/team-reservations-ui.test.tsx e supabase/tests/reservation_contact.sql. O teste SQL cobre prazo, isolamento de notas, autoria, repetição sem duplicatas, remoção de permissão e falha do histórico com reversão do status. Os testes locais não alteram o Supabase remoto.
 
 ## Confirmação de senha ao abrir Administração
@@ -151,3 +150,13 @@ A nova senha e sua confirmação devem coincidir e ter pelo menos oito caractere
 Testes automatizados e no navegador usam respostas simuladas, sem criar usuários nem enviar e-mails reais. Para validar o projeto hospedado, use Esqueci minha senha com uma conta sua, abra o e-mail mais recente e entre com a nova senha depois da alteração.
 
 Referências oficiais: https://supabase.com/docs/guides/auth/passwords e https://supabase.com/docs/reference/javascript/auth-resetpasswordforemail.
+
+## Chat de reservas com IA
+
+A migração 202611090001_reservation_chat.sql adiciona conversas e mensagens protegidas por funções autenticadas. O Gemini roda na função reservation-assistant do Supabase, com credenciais somente no servidor. A equipe recebe a fila em /chat. O chat não modifica prazos, confirmação de contato ou conclusão da reserva. Para aplicar e publicar, consulte [CHAT_SETUP.md](CHAT_SETUP.md).
+
+## Condições comerciais aprovadas
+
+Depois de 202611090001_reservation_chat.sql, aplique uma única vez [202611090002_commercial_terms.sql](migrations/202611090002_commercial_terms.sql). Administradores cadastram e aprovam valores em /condicoes-comerciais. Colaboradores e clientes não podem alterar o cadastro. Somente o servidor consulta condições publicadas para a IA; rascunhos ficam fora das respostas.
+
+As condições possuem versão, aprovação explícita e histórico. Não são importados preços ilustrativos. Execute tests/commercial_terms.sql em um ambiente de teste para verificar permissões, conflitos de versão e retirada de aprovação. Siga o [guia de ativação](CHAT_SETUP.md) para republicar a função e configurar o modelo.
