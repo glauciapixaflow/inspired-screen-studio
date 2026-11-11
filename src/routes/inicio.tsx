@@ -114,9 +114,11 @@ function Index() {
       <MarsSpecialistDialog open={specialistOpen} onOpenChange={setSpecialistOpen} />
       {/* Hero */}
       <section className="bg-ink px-6 pb-24 text-ink-foreground lg:px-10">
-        <header className="flex items-center justify-between border-b border-ink-foreground/15 py-8">
-          <Logo />
-          <nav className="hidden items-center gap-6 xl:gap-10 lg:flex">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-ink-foreground/15 py-5 sm:py-6">
+          <div className="min-w-0 flex-1 2xl:flex-none">
+            <Logo />
+          </div>
+          <nav aria-label="Menu principal" className="hidden items-center gap-6 2xl:flex">
             <a href="#lotes">Lotes</a>
             <a href="#como">Como funciona</a>
             <a href="#mapa">Mapa de Marte</a>
@@ -138,9 +140,10 @@ function Index() {
           <Button
             variant="ghost"
             size="icon"
-            className="size-11 text-ink-foreground lg:hidden"
+            className="size-11 shrink-0 text-ink-foreground 2xl:hidden"
             aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
             aria-expanded={menuOpen}
+            aria-controls="site-navigation"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             {menuOpen ? <X /> : <Menu />}
@@ -148,7 +151,8 @@ function Index() {
         </header>
         {menuOpen && (
           <nav
-            className="grid grid-cols-2 gap-2 border-b border-ink-foreground/15 py-4 lg:hidden"
+            id="site-navigation"
+            className="grid grid-cols-2 gap-2 border-b border-ink-foreground/15 py-4 2xl:hidden"
             aria-label="Menu principal"
           >
             {[
