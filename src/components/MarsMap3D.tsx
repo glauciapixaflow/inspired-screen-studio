@@ -5,6 +5,7 @@ import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { useParcelAvailability } from "@/hooks/use-parcel-availability";
 import type { ParcelAvailability } from "@/lib/parcel-availability";
+import { regionLotAvailability } from "@/lib/parcel-availability";
 import FuturisticHouse, { sceneColor } from "@/components/FuturisticHouse";
 import HousePrinter3D from "@/components/HousePrinter3D";
 import Subdivision3D from "@/components/Subdivision3D";
@@ -17,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { LOTES, type Lote } from "@/lib/mars-regions";
+import { LOTES, LOT_ROWS, type Lote } from "@/lib/mars-regions";
 import {
   completeConstruction,
   parcelOffset,
@@ -107,10 +108,12 @@ function Markers({
   onPick,
   hidden,
   availability,
+  availabilityKnown,
 }: {
   onPick: (l: Lote) => void;
   hidden: boolean;
   availability: ParcelAvailability[];
+  availabilityKnown: boolean;
 }) {
   const colors = useMemo(
     () => ({ reserved: sceneColor("--map-reserved"), free: sceneColor("--map-selected") }),
@@ -138,7 +141,8 @@ function Markers({
                 className="cursor-pointer whitespace-nowrap rounded-full bg-ink/90 px-3 py-1 text-xs font-semibold tracking-widest text-ink-foreground"
               >
                 {l.id} · {l.nome.toUpperCase()}
-                {occupied > 0 && ` · ${occupied} indisponíveis`}
+                {availabilityKnown &&
+                  ` · ${regionLotAvailability(l.id, availability).available} lotes disponíveis`}
               </span>
             </Html>
           </group>
@@ -174,6 +178,12 @@ function Flight({ active, fly }: { active: boolean; fly: React.MutableRefObject<
 
 export default function MarsMap3D({ initialRegion }: { initialRegion?: string | undefined }) {
   const availability = useParcelAvailability();
+  const availabilityKnown =
+    !!availability.user &&
+    !availability.loading &&
+    !availability.error &&
+    !availability.query.isPending &&
+    !availability.query.isError;
   const [mode, setMode] = useState<"orbita" | "voo">("orbita");
   const [picked, setPicked] = useState<Lote | null>(null);
   const [plot, setPlot] = useState<string | null>(null);
@@ -249,6 +259,7 @@ export default function MarsMap3D({ initialRegion }: { initialRegion?: string | 
         <Planet />
         <Markers
           availability={availability.parcels}
+          availabilityKnown={availabilityKnown}
           hidden={!!zoomed}
           onPick={(l) => {
             setPicked(l);
@@ -322,6 +333,8 @@ export default function MarsMap3D({ initialRegion }: { initialRegion?: string | 
             {LOTES.map((region) => (
               <SelectItem key={region.id} value={region.id}>
                 {region.nome}
+                {availabilityKnown &&
+                  ` · ${regionLotAvailability(region.id, availability.parcels).available} lotes disponíveis`}
               </SelectItem>
             ))}
           </SelectContent>
@@ -330,18 +343,22 @@ export default function MarsMap3D({ initialRegion }: { initialRegion?: string | 
 
       <div
         className={`absolute bottom-20 left-6 max-w-56 sm:bottom-auto sm:top-36 space-y-2 bg-ink/90 p-3 text-xs text-ink-foreground ${picked ? "hidden sm:block" : ""}`}
-        aria-label="Legenda de reservas"
+        aria-label="Disponibilidade de lotes por região"
       >
+        <p className="font-semibold">Lotes de terra por região</p>
         <p className="flex items-center gap-2">
-          <span className="h-3 w-3 bg-map-reserved" /> Reservada
+          <span className="h-3 w-3 bg-map-free" /> Lote disponível
         </p>
         <p className="flex items-center gap-2">
-          <span className="h-3 w-3 bg-map-confirmed" /> Confirmada pela equipe
+          <span className="h-3 w-3 bg-map-reserved" /> Lote reservado
         </p>
-        {availability.loading ? (
-          <p role="status">Consultando reservas...</p>
+        <p className="flex items-center gap-2">
+          <span className="h-3 w-3 bg-map-confirmed" /> Lote confirmado pela equipe
+        </p>
+        {availability.loading || (!!availability.user && availability.query.isPending) ? (
+          <p role="status">Consultando lotes disponíveis...</p>
         ) : !availability.user ? (
-          <p>Entre na conta para consultar as reservas.</p>
+          <p>Entre na conta para consultar os lotes disponíveis por região.</p>
         ) : availability.query.isError || availability.error ? (
           <>
             <p role="alert">Disponibilidade indisponível.</p>
@@ -350,9 +367,22 @@ export default function MarsMap3D({ initialRegion }: { initialRegion?: string | 
             </button>
           </>
         ) : (
-          <p>
-            {availability.parcels.length} parcelas indisponíveis. Atualização a cada 15 segundos.
-          </p>
+          <>
+            <ul
+              className="max-h-[25vh] space-y-1 overflow-y-auto"
+              aria-label="Lotes disponíveis por região"
+            >
+              {LOTES.map((region) => {
+                const counts = regionLotAvailability(region.id, availability.parcels);
+                return (
+                  <li key={region.id}>
+                    {region.nome}: {counts.available} de {counts.total} lotes disponíveis
+                  </li>
+                );
+              })}
+            </ul>
+            <p>Atualização a cada 15 segundos.</p>
+          </>
         )}
       </div>
       {mode === "voo" && (
@@ -369,7 +399,7 @@ export default function MarsMap3D({ initialRegion }: { initialRegion?: string | 
 
       {zoomed && mode === "orbita" && (
         <p className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-ink/80 px-5 py-3 text-xs tracking-[0.2em] text-ink-foreground">
-          CLIQUE EM UMA PARCELA PARA ESCOLHER
+          CLIQUE EM UM LOTE PARA ESCOLHER
         </p>
       )}
 
@@ -379,6 +409,22 @@ export default function MarsMap3D({ initialRegion }: { initialRegion?: string | 
         >
           <p className="eyebrow text-muted-foreground">Região {picked.id}</p>
           <h3 className="mt-3 text-2xl">{picked.nome}</h3>
+          {availabilityKnown &&
+            (() => {
+              const counts = regionLotAvailability(picked.id, availability.parcels);
+              return (
+                <div
+                  className="mt-3 rounded-md border border-border p-3"
+                  aria-label={`Disponibilidade de lotes em ${picked.nome}`}
+                >
+                  <p className="text-lg font-semibold">{counts.available} lotes disponíveis</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {counts.total} lotes de terra no total · {counts.reserved} reservados ·{" "}
+                    {counts.confirmed} confirmados
+                  </p>
+                </div>
+              );
+            })()}
           <p className="mt-2 text-sm text-muted-foreground">
             {picked.preco ? (
               <>
@@ -388,8 +434,8 @@ export default function MarsMap3D({ initialRegion }: { initialRegion?: string | 
               "Valor a definir"
             )}
           </p>
-          {availability.user && !availability.query.isPending && !availability.query.isError && (
-            <div className="mt-4 grid grid-cols-4 gap-1" aria-label="Parcelas da região">
+          {availabilityKnown && (
+            <div className="mt-4 grid grid-cols-4 gap-1" aria-label="Lotes da região">
               {ROWS.flatMap((r) =>
                 [1, 2, 3, 4].map((c) => {
                   const id = `${r}${c}`;
@@ -398,14 +444,14 @@ export default function MarsMap3D({ initialRegion }: { initialRegion?: string | 
                   );
                   const label =
                     occupied?.status === "confirmed"
-                      ? "Confirmada"
+                      ? "Confirmado"
                       : occupied
-                        ? "Reservada"
-                        : "Livre";
+                        ? "Reservado"
+                        : "Disponível";
                   return (
                     <button
                       key={id}
-                      aria-label={`Parcela ${id}: ${label}`}
+                      aria-label={`Lote ${id}: ${label}`}
                       aria-pressed={plot === id}
                       onClick={() => setPlot(id)}
                       className={`border border-border p-2 text-xs ${occupied?.status === "confirmed" ? "bg-map-confirmed text-ink" : occupied ? "bg-map-reserved text-ink" : "bg-background"} ${plot === id ? "ring-2 ring-foreground" : ""}`}
@@ -420,7 +466,7 @@ export default function MarsMap3D({ initialRegion }: { initialRegion?: string | 
           )}
           {plot ? (
             <div className="mt-5 border-t border-border pt-5">
-              <p className="eyebrow text-muted-foreground">Parcela escolhida</p>
+              <p className="eyebrow text-muted-foreground">Lote escolhido</p>
               <p className="mt-2 text-xl">
                 {picked.nome} · {plot}
               </p>
@@ -472,7 +518,7 @@ export default function MarsMap3D({ initialRegion }: { initialRegion?: string | 
               }}
               className="mt-5 w-full bg-primary py-3 font-semibold text-primary-foreground"
             >
-              Aproximar e escolher parcela
+              Aproximar e escolher lote
             </button>
           )}
           <button
@@ -543,7 +589,7 @@ function Zoomer({
   return null;
 }
 
-const ROWS = ["A", "B", "C", "D"];
+const ROWS = LOT_ROWS;
 // Grid of purchasable parcels on the surface around a region
 function Plots({
   lote,

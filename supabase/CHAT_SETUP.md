@@ -12,6 +12,13 @@ O primeiro arquivo cria conversas, mensagens e controle dos turnos da IA. També
 
 ## 2. Configurar a chave do Gemini
 
+Para respostas sobre quantos lotes de terra estão disponíveis, aplique também, uma única vez,
+[202611110001_ai_lot_availability.sql](migrations/202611110001_ai_lot_availability.sql).
+Depois publique novamente `reservation-assistant`. A consulta retorna somente contagens por região,
+sem dados pessoais. Desconta reservas ativas e confirmações; reservas vencidas e canceladas não ocupam lotes.
+O especialista e o atendimento de reservas respondem com horário de consulta, sem prever disponibilidade futura.
+Essa resposta usa o banco diretamente e não depende de uma chamada ao Gemini.
+
 Abra [Google AI Studio — API Keys](https://aistudio.google.com/api-keys), entre com sua conta Google e crie uma chave para o projeto. Copie a chave diretamente para os Secrets do Supabase; não a envie por mensagens.
 
 No projeto Supabase, abra **Edge Functions → Secrets** e adicione:

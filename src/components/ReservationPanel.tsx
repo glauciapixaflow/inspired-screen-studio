@@ -101,7 +101,7 @@ export function ReservationPanel({
             <p>
               Entre em contato até{" "}
               <strong>{formatDeadline(saved.expires_at)} (horário de Brasília)</strong>. Sem contato
-              confirmado pela equipe, a reserva expira e a parcela é liberada.
+              confirmado pela equipe, a reserva expira e o lote é liberado.
             </p>
           )}
           <p className="break-all">
@@ -119,7 +119,7 @@ export function ReservationPanel({
               {occupied.status === "confirmed"
                 ? "Esta área já foi confirmada e está indisponível."
                 : "Esta área já está reservada por outra conta."}{" "}
-              Escolha outra parcela.
+              Escolha outro lote.
             </p>
           ) : availabilityError ? (
             <p role="alert">

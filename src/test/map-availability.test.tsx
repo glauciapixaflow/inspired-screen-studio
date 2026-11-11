@@ -55,7 +55,7 @@ afterEach(cleanup);
 describe("Map shared availability", () => {
   it("identifies occupied parcels to a different account and prevents another reservation", async () => {
     show();
-    fireEvent.click(await screen.findByRole("button", { name: "Parcela A1: Reservada" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Lote A1: Reservado" }));
     expect(screen.getByRole("status")).toHaveTextContent("reservada por outra conta");
     expect(screen.getByRole("button", { name: "Solicitar reserva desta área" })).toBeDisabled();
     expect(reserve).not.toHaveBeenCalled();
@@ -63,9 +63,9 @@ describe("Map shared availability", () => {
   });
   it("distinguishes confirmed parcels and leaves free parcels selectable", async () => {
     show();
-    fireEvent.click(await screen.findByRole("button", { name: "Parcela A2: Confirmada" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Lote A2: Confirmado" }));
     expect(screen.getByRole("status")).toHaveTextContent("já foi confirmada");
-    fireEvent.click(screen.getByRole("button", { name: "Parcela A3: Livre" }));
+    fireEvent.click(screen.getByRole("button", { name: "Lote A3: Disponível" }));
     expect(screen.getByRole("button", { name: "Solicitar reserva desta área" })).toBeEnabled();
   });
   it("does not describe unknown availability as free when lookup fails", async () => {
@@ -78,6 +78,31 @@ describe("Map shared availability", () => {
     });
     show();
     expect(await screen.findByRole("alert")).toHaveTextContent("Disponibilidade indisponível");
-    expect(screen.queryByRole("button", { name: /Parcela A1/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Lote A1/ })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Lotes disponíveis por região")).not.toBeInTheDocument();
+    expect(screen.queryByText("16 lotes disponíveis")).not.toBeInTheDocument();
+  });
+  it("counts available land lots independently for each region", async () => {
+    show();
+    expect(await screen.findByText("14 lotes disponíveis")).toBeInTheDocument();
+    expect(screen.getByText("Elysium: 14 de 16 lotes disponíveis")).toBeInTheDocument();
+    expect(screen.getByText("Olympus: 16 de 16 lotes disponíveis")).toBeInTheDocument();
+    expect(
+      screen.getByText(/16 lotes de terra no total · 1 reservados · 1 confirmados/),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Lotes da região").querySelectorAll("button")).toHaveLength(16);
+  });
+  it("does not show available counts before the lookup finishes", () => {
+    availability.mockReturnValue({
+      user: { id: "other-user" },
+      loading: false,
+      error: false,
+      query: { isPending: true, isError: false },
+      parcels: [],
+    });
+    show();
+    expect(screen.getByRole("status")).toHaveTextContent("Consultando lotes disponíveis");
+    expect(screen.queryByLabelText("Lotes disponíveis por região")).not.toBeInTheDocument();
+    expect(screen.queryByText("16 lotes disponíveis")).not.toBeInTheDocument();
   });
 });

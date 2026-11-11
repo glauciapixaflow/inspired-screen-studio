@@ -1,5 +1,10 @@
 export type Lote = { id: string; nome: string; lat: number; lon: number; preco: string | null };
 
+export const LOT_ROWS = ["A", "B", "C", "D"] as const;
+export const REGION_LOT_IDS = LOT_ROWS.flatMap((row) =>
+  [1, 2, 3, 4].map((column) => `${row}${column}`),
+);
+
 export const LOTES: Lote[] = [
   { id: "08", nome: "Elysium", lat: 18.6, lon: 146, preco: "R$ 189 mil" },
   { id: "12", nome: "Olympus", lat: 18.4, lon: -134, preco: "R$ 312 mil" },

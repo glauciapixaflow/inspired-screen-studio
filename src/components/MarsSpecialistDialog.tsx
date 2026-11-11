@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useUserRole } from "@/hooks/use-user-role";
 import { askMars, type MarsMessage } from "@/lib/mars-specialist";
 const suggestions = [
+  "Quantos lotes estão disponíveis por região?",
   "Qual é o preço em Elysium?",
   "Quais as formas de pagamento?",
   "Como é o clima de Marte?",
